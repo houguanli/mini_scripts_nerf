@@ -1,0 +1,28 @@
+@echo off
+setlocal
+
+:: 图片文件夹的路径
+
+set DATASET_PATH="C:/Users/GUANL/Desktop/face_video/front"
+set WORKING_PATH="C:/Users/GUANL/Desktop/face_video/front"
+set IMAGES_PATH="C:/Users/GUANL/Desktop/face_video/front/images"
+
+
+:: 特征提取
+colmap feature_extractor --database_path %WORKING_PATH%\database.db --image_path %IMAGES_PATH%
+
+:: 特征匹配
+colmap exhaustive_matcher --database_path %WORKING_PATH%\database.db
+
+:: 进行稀疏重建
+mkdir %DATASET_PATH%/sparse
+mkdir %DATASET_PATH%/dense
+
+colmap mapper --database_path %WORKING_PATH%\database.db --image_path %IMAGES_PATH% --output_path %WORKING_PATH%\sparse
+
+
+:: 导出为文本格式（可以更容易地读取相机参数）
+colmap model_converter --input_path %WORKING_PATH%\sparse\0 --output_path %WORKING_PATH%\sparse\0 --output_type TXT
+
+endlocal
+pause
