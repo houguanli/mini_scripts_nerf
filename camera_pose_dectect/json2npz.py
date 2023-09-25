@@ -2,6 +2,20 @@ import json
 import numpy as np
 
 
+def load_npz_to_dict(file_path):
+    # 加载npz文件
+    data = np.load(file_path)
+
+    # 将数据转换为字典
+    data_dict = {key: data[key] for key in data.keys()}
+
+    # 打印字典
+    for key, value in data_dict.items():
+        print(f"{key}: {value}")
+
+    return data_dict
+
+
 def convert(frame_count=1, camera_count=1):
     # 从JSON文件读取相机参数
     json_file_path = 'D:/gitwork/NeuS/public_data/sim_ball/camera.json'  # 您的JSON文件路径

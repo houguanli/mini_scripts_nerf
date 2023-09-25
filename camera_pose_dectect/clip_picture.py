@@ -1,0 +1,1 @@
+### this file is wrritten for clip the picture around the mask

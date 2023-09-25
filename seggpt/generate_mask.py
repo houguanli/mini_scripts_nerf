@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import os
 
-def generate_mask_from_image(input_path, display_width=1920, brush_size=200):
+def generate_mask_from_image(input_path, display_width=1280, brush_size=200):
     drawing = False
     _flip=1
     image = cv2.imread(input_path, cv2.IMREAD_COLOR)
@@ -69,5 +69,7 @@ def generate_mask_from_image(input_path, display_width=1920, brush_size=200):
 
 
 if __name__ == '__main__':
-# 使用方法
-    generate_mask_from_image("D:/gitwork/NeuS/public_data/rws_obstacle/mask/0001.jpg")  # 替换为你的图片路径
+    # 使用方法
+    path = "C:/Users/GUANL/Desktop/GenshinNerf/__tmp/mask/0020.jpg"
+    path = "D:/gitwork/NeuS/public_data/rws_object2/image/0011.jpg"
+    generate_mask_from_image(path)  # 替换为你的图片路径

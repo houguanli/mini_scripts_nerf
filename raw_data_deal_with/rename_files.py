@@ -30,5 +30,5 @@ def rename_images(directory):
 
 
 if __name__ == "__main__":
-    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t13/static/obj_'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/__tmp'  # 替换为你的文件夹路径
     rename_images(directory_path)

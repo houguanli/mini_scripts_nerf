@@ -67,8 +67,35 @@ def sp_re(mat):
     mat[:3, :3] = R
     return mat
 
+
 #  notice: this calculation needs w2c camera mat, not c2w
 def read_cameras(cameras_path, frames=4):
+
+
+    data = np.load(cameras_path)
+
+    # 将数据转换为字典
+    data_dict = {key: data[key] for key in data.keys()}
+
+    Ks, Ts_inv = [], []
+    for idx in range(0, frames):
+        template_name = str(idx + 1) + "_1"
+        K_name = template_name + "_K"
+        T_name = template_name + "_M"
+        k = np.array(data_dict[K_name])
+        t = np.array(data_dict[T_name])
+        Ks.append(k)
+        # t = mat_convert(t)
+        # t = look_at_pos(t)
+        t = np.eye(4, 4)
+        t[2, 3] = 2
+        t_inv = np.linalg.inv(t)
+        Ts_inv.append(t_inv)
+        # print("err at calc mats for " + str(idx))
+
+    return Ks, Ts_inv
+
+def read_cameras_npz(cameras_path, frames=4):
     with open(cameras_path, 'r') as f:
         camera_json = json.load(f)
     print(camera_json)
@@ -82,6 +109,8 @@ def read_cameras(cameras_path, frames=4):
         Ks.append(k)
         # t = mat_convert(t)
         # t = look_at_pos(t)
+        t = np.eye(4, 4)
+        t[2, 3] = 2
         t_inv = np.linalg.inv(t)
         Ts_inv.append(t_inv)
         # print("err at calc mats for " + str(idx))
@@ -114,14 +143,28 @@ def reformat_mat(mat_path, frames=50):
     with open(mat_path, 'w') as f:
         json.dump(all_json, f, indent=4)
     return
+def load_npz_to_dict(file_path):
+    # 加载npz文件
+    data = np.load(file_path)
 
+    # 将数据转换为字典
+    data_dict = {key: data[key] for key in data.keys()}
+
+    # 打印字典
+    for key, value in data_dict.items():
+        print(f"{key}: {value}")
+
+    return data_dict
 
 if __name__ == '__main__':
     cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t11/camera.json'
     cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t13/static/obstacle/camera.json'
+    npz_path = "D:/gitwork/NeuS/public_data/bird/cameras_large.npz"
     # cameras_path = 'C:/Users/guanl/Desktop/face_video/front/sparse/1/cameras_sphere.json'
     # reformat_mat(cameras_path)
-    # exit()
+    npz_dict = load_npz_to_dict(npz_path)
+
+    exit()
     Ks, Ts_inv = read_cameras(cameras_path, frames=43)
     # import pdbDDD
     # pdb.set_trace()

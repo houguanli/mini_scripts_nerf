@@ -100,8 +100,8 @@ def one_camera_seggpt_multi_init_static_sense_bat_maker(input_dir, output_dir, s
         file_name = f"{frame_id:04}"  # name format
         input_img_path = input_dir + "/" + file_name + "." + image_type
         # output_img_path = output_dir + "/" + file_name + "." + image_type
-        prompt_image_path = input_dir + "/" + "0001." + image_type + " " + input_dir + "/" + "0035." + image_type
-        prompt_img_mask_path = output_dir + "/" + "mask_0001." + image_type + " " + output_dir + "/" + "mask_0035." + image_type
+        prompt_image_path = input_dir + "/" + "0001." + image_type + " " + input_dir + "/" + "0020." + image_type
+        prompt_img_mask_path = output_dir + "/" + "mask_0001." + image_type + " " + output_dir + "/" + "mask_0020." + image_type
         input_para = "--input_image " + input_img_path + " "
         prompt_para = "--prompt_image " + prompt_image_path + " "
         prompt_mask_para = "--prompt_target " + prompt_img_mask_path + " "
@@ -191,11 +191,11 @@ def test3():
     return
 
 def test_blender_static():
-    input_dir = "D:/gitwork/NeuS/public_data/rws_object2/image"
-    out_dir = "D:/gitwork/NeuS/public_data/rws_object2/mask"
-    # one_camera_seggpt_multi_init_static_sense_bat_maker(input_dir, out_dir, out_dir + "/auto.bat", frame_count=38, image_type="jpg")
+    input_dir = "C:/Users/GUANL/Desktop/GenshinNerf/__tmp/image"
+    out_dir = "C:/Users/GUANL/Desktop/GenshinNerf/__tmp/mask"
+    # one_camera_seggpt_multi_init_static_sense_bat_maker(input_dir, out_dir, out_dir + "/auto.bat", frame_count=32, image_type="jpg")
     masks_dir = out_dir
-    refine_mask_batch_static_sense_(masks_dir, frame_count=38, image_type="jpg")
+    refine_mask_batch_static_sense_(masks_dir, frame_count=32, image_type="jpg")
     return
 
 # Press the green button in the gutter to run the script.
@@ -203,3 +203,4 @@ if __name__ == '__main__':
     test_blender_static()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+

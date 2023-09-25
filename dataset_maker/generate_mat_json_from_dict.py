@@ -60,7 +60,7 @@ def calc_json(file_dict, count_imgs, img_type=".jpg"):  # IMPORTANT:: c2w == M f
             print("ERR AT detect M for " + filename)
             continue
         if debug_mode:
-            print("K & M calc success! \n-----------------")
+            print("K & M calc success! /n-----------------")
             print(K)
             print(c2w)
             print("-----------------------------------------")
@@ -74,7 +74,7 @@ def calc_json(file_dict, count_imgs, img_type=".jpg"):  # IMPORTANT:: c2w == M f
         dict[M_n] = c2w.tolist()
         dict[M_inv_n] = w2c.tolist()
     if debug_mode:
-        print("-----Calc end success with " + str(success_count) + " imgs with all count = " + str(count_imgs) + "--")
+        print("-----Calc success with " + str(success_count) + " imgs with all count=" + str(count_imgs) + "------")
     cameras_path = file_dict + "/camera.json"
     with open(cameras_path, 'w') as json_file:
         json.dump(dict, json_file, indent=4)
@@ -82,10 +82,12 @@ def calc_json(file_dict, count_imgs, img_type=".jpg"):  # IMPORTANT:: c2w == M f
 
 if __name__ == "__main__":
     folder_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t13/static/test'
+    folder_path = 'C:/Users/GUANL/Desktop/GenshinNerf/__tmp'
+
     # folder_path = 'D:/gitwork/NeuS/public_data/real_world_multi_qrs/mask'
 
     # count = rename_images_in_folder(folder_path)
-    count = 1
+    count = 32
     calc_json(folder_path, count)
 
 
