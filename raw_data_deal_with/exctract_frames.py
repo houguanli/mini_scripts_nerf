@@ -33,7 +33,7 @@ def extract_frames_and_calib(video_path, jump_frames=1):
             break
 
         if frame_count % jump_frames == 0:
-            frame_name = os.path.join(dir_name, f"frame_{save_count:04}.png")
+            frame_name = os.path.join(dir_name, f"{save_count:04}.png")
             cv2.imwrite(frame_name, frame)
             save_count += 1
 
@@ -48,8 +48,8 @@ def extract_frames_and_calib(video_path, jump_frames=1):
 
 if __name__ == "__main__":
 
-    video_path = "C:/Users/guanl/Desktop/face_video/front.mp4"
-    extract_frames_and_calib(video_path)
+    video_path = "C:/Users/guanl/Desktop/GenshinNerf/t15/t15.MP4"
+    extract_frames_and_calib(video_path, jump_frames=10)
 
 
 

@@ -99,7 +99,7 @@ for index in range(1, 30):
     pixel_size_y = sensor_height / pixels_height
     fx = focal_length / pixel_size_x
     fy = focal_length / pixel_size_y
-    cx = pixels_width / 2
+    cx = 500 / 2
     cy = pixels_height / 2
 
     # 创建内部参数矩阵

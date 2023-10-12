@@ -16,8 +16,15 @@ default_camera_EXIF_K = [[3.21111111e+03, 0.00000000e+00, 2.31200000e+03],
 default_chessboard_K = [[3.55085455e+03, 0.00000000e+00, 2.23088539e+03],
                         [0.00000000e+00, 3.54865667e+03, 1.67835047e+03],
                         [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
-cmp_deff_pexel = 1.525774468624755  # if this is less than 1, it will be a good assm
+
+dynamic_camera_K = [[735.15009953,  0.,          961.93174061],
+                     [0.,            733.3960477, 553.13510509],
+                     [0.,           0.,           1.          ]]  # this camera K is from a pan-tilt-zoom camera
+cmp_diff_pixel = 1.525774468624755  # if this is less than 1, it will be a good assm
+cmp_diff_dynamic_camera_pixel = 0.8204705806151762
 default_chessboard_coeffs = np.array([4.25182401e-02, 3.70250319e-01, 4.63505072e-04, -3.93194259e-03])
+dynamic_camera_chessboard_coeffs = np.array([0.00948553, -0.02774021, 0.00214638,  0.02973592])
+
 
 idol_coeffs = np.zeros(4)
 qrs_id_pos_dict_old = {
@@ -50,7 +57,6 @@ def init_qrs_id_dict_wood():
     tmp_set = {}
     for i in range(0, 9):
         tmp_set[str(i)] = [wood_h[i % 3] / 100, wood_v[int((i - i % 3) / 3)] / 100]  # init position, convert it to meter
-
     tmp_set["8"][1] = tmp_set["8"][1] + 0.005  # this is a small distance error in wood board
     return tmp_set
 

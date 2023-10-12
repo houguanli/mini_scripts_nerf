@@ -21,6 +21,8 @@ def show_rays(rays_o, rays_d, scale_factor=10):
     axis = o3d.geometry.TriangleMesh.create_coordinate_frame()
     o3d.visualization.draw_geometries([line_set, axis, model1])
 
+
+
 if __name__ == '__main__':
     images_path_pattern = 'D:/gitwork/NeuS/dynamic_test/test_render.txt'
     with open(images_path_pattern, 'r') as f:
@@ -39,5 +41,7 @@ if __name__ == '__main__':
             count = 0
             rays_d.append([float(i) for i in data])
     # print(str(rays_o))
+
+    rays_o, rays_d = np.array([[2.9335, -1.7378, -4.7746]]), np.array([[-0.5976,  0.1954,  0.7776]])
     show_rays(rays_o, rays_d)
     # finish tmp_saving
