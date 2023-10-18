@@ -32,8 +32,22 @@ def create_aruco_board_image(output_path="frame.png", markersX=1, markersY=1, ma
     cv2.imwrite(output_path, img1)
     cv2.waitKey(0)
 
+def generate_arcs(count=35, rows_count=5, col_count=7):
+    # assert rows_count * col_count = count!
+
+    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
+
+    # 生成标记
+    markerImage = np.zeros((200, 200), dtype=np.uint8)
+    for i in range(count):
+        markerImage = cv2.aruco.drawMarker(dictionary, i, 200, markerImage, 1)
+
+        firename='C:/Users/GUANL/Desktop/GenshinNerf/qrs/'+str(i)+'.png'
+        cv2.imwrite(firename, markerImage)
+
 
 if __name__ == "__main__":
     # 调用函数，生成ArUco棋盘图像并保存为"frame.png"
     create_aruco_board_image()
+    # generate_arcs()
 

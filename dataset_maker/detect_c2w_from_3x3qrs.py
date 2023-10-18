@@ -4,12 +4,15 @@ import numpy as np
 # red axis refers to X and green refers to Y
 debug_mode = True
 show_res_img = False
-mode_dict = {'EXIF_mode': 'EXIF_mode', 'chessboard_mode': 'chessboard_mode'}
-K_mode = 'chessboard_mode'
+mode_dict = {'EXIF_mode': 'EXIF_mode', 'chessboard_mode': 'chessboard_mode', 'dynamic_camera_mode':'dynamic_camera_mode'}
+ar_set_modes = ["wood_mode", "a4_mode"]
+K_mode = 'dynamic_camera_mode'
 qr_move_vector = []
 qr_code_length = 0.024  # the size of the qr code
 board_length = 0.61  # the length of the test board
 default_marker_size = 0.031
+default_5x7_marker_size = 0.0185
+arcuo_size_5x7e=0.0185
 default_camera_EXIF_K = [[3.21111111e+03, 0.00000000e+00, 2.31200000e+03],
                          [0.00000000e+00, 3.61666667e+03, 1.73600000e+03],
                          [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]  # default camera mat
@@ -17,14 +20,18 @@ default_chessboard_K = [[3.55085455e+03, 0.00000000e+00, 2.23088539e+03],
                         [0.00000000e+00, 3.54865667e+03, 1.67835047e+03],
                         [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
 
-dynamic_camera_K = [[735.15009953,  0.,          961.93174061],
-                     [0.,            733.3960477, 553.13510509],
-                     [0.,           0.,           1.          ]]  # this camera K is from a pan-tilt-zoom camera
+dynamic_camera_K = [[735.15009953, 0., 961.93174061],
+                    [0., 733.3960477, 553.13510509],
+                    [0., 0., 1.]]  # this camera K is from a pan-tilt-zoom camera
+dynamic_camera_K_2700 = [[1.20204328e+03, 0.00000000e+00, 1.36849027e+03],
+                         [0.00000000e+00, 1.19620501e+03, 7.01540732e+02],
+                         [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
 cmp_diff_pixel = 1.525774468624755  # if this is less than 1, it will be a good assm
+cmp_diff_dynamic_camera_pixel_2700 = 0.9102474884918834
 cmp_diff_dynamic_camera_pixel = 0.8204705806151762
 default_chessboard_coeffs = np.array([4.25182401e-02, 3.70250319e-01, 4.63505072e-04, -3.93194259e-03])
-dynamic_camera_chessboard_coeffs = np.array([0.00948553, -0.02774021, 0.00214638,  0.02973592])
-
+dynamic_camera_chessboard_coeffs = np.array([0.00948553, -0.02774021, 0.00214638, 0.02973592])
+dynamic_camera_chessboard_coeffs_2700 = np.array([0.02870973, -0.04853193, -0.0049702,   0.0004024,   0.03914582])
 
 idol_coeffs = np.zeros(4)
 qrs_id_pos_dict_old = {
@@ -56,13 +63,27 @@ wood_v = [10.3, 31.3, 51.3]  # vertical distance for in wood board
 def init_qrs_id_dict_wood():
     tmp_set = {}
     for i in range(0, 9):
-        tmp_set[str(i)] = [wood_h[i % 3] / 100, wood_v[int((i - i % 3) / 3)] / 100]  # init position, convert it to meter
+        tmp_set[str(i)] = [wood_h[i % 3] / 100,
+                           wood_v[int((i - i % 3) / 3)] / 100]  # init position, convert it to meter
     tmp_set["8"][1] = tmp_set["8"][1] + 0.005  # this is a small distance error in wood board
     return tmp_set
 
 
-qrs_id_dict_wood = init_qrs_id_dict_wood()
+def init_qrs_id_dict_a4(row_count=5, col_count=7, arcuo_size=0.0185, boarder_size=0.0015):
+    # TODO: this func assumes that we recieve a set of arcuo code
+    # note that arcuo index start from 1
+    tmp_dict = {}
 
+    for i in range(0, row_count):
+        for j in range(0, col_count):
+            tmp_x, tmp_y = i * (arcuo_size + boarder_size), -j * (arcuo_size + boarder_size)
+            index = i + j * row_count
+            tmp_dict[str(index)] = [tmp_x, tmp_y]
+
+    return tmp_dict
+
+qrs_id_dict_wood = init_qrs_id_dict_wood()
+qrs_id_dict_a4 = init_qrs_id_dict_a4()
 
 def get_paras_fromapi(K=None):
     """
@@ -72,7 +93,7 @@ def get_paras_fromapi(K=None):
     """
     # For this example, we'll use predefined camera parameters.
     # In a real-world scenario, these could be fetched from an API or some calibration data.
-    dist_coeffs = None
+    dist_coeffs = default_chessboard_coeffs
     if K is None:  # use a default of xiao mi
         if K_mode == mode_dict['EXIF_mode']:
             K = default_camera_EXIF_K
@@ -80,6 +101,9 @@ def get_paras_fromapi(K=None):
         elif K_mode == mode_dict['chessboard_mode']:
             K = default_chessboard_K
             dist_coeffs = default_chessboard_coeffs  # Assuming no lens distortion
+        elif K_mode == mode_dict['dynamic_camera_mode']:
+            K = dynamic_camera_K
+            dist_coeffs = dynamic_camera_chessboard_coeffs
         else:
             print("no such mode! please make sure about it!")
             exit(0)
@@ -111,11 +135,17 @@ def estimate_pose_single_marker(corner, marker_size, mtx, distortion):
     return rvec, tvec, trash
 
 
-def re_estimate_pose(id__, rvec, tvec):
+def re_estimate_pose(id__, rvec, tvec, arcuo_mode="a4_mode"):
     """ this cal a new r_ mat, scr it if bug occurs"""
     """the target 3x3 qr code has its own position to original point"""
     rmat, _ = cv2.Rodrigues(rvec)  # cal rotation mat
-    tmp_qr2world = np.array([[qrs_id_dict_wood[str(id__)][0]], [qrs_id_dict_wood[str(id__)][1]], [0]])
+    if arcuo_mode == "a4_mode":
+        tmp_qr2world = np.array([[qrs_id_dict_a4[str(id__)][0]], [qrs_id_dict_a4[str(id__)][1]], [0.]])
+    elif arcuo_mode == "wood_mode":
+        tmp_qr2world = np.array([[qrs_id_dict_wood[str(id__)][0]], [qrs_id_dict_wood[str(id__)][1]], [0.]])
+    else:
+        print("ERR! mode is not set correctly!")
+        exit(-1)
     delta_tvec = -np.dot(rmat, tmp_qr2world)
     tvec = tvec + delta_tvec
     return rvec, tvec
@@ -219,12 +249,14 @@ def calc_extrinsic_mat_from__avg_vecs(rvecs, tvecs, threshold=20.0, threshold2=2
     return transform_matrix, c2w_mat
 
 
-def detect_aruco_and_estimate_pose(image_path, marker_size, K):
+def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug = False):
+
     """
     Detect ArUco markers and estimate pose.
     :param image_path: Path to the image containing ArUco markers.
     :return: List of detected marker corners and their IDs, and rotation and translation vectors for each marker.
     """
+    debug_mode = require_debug
     camera_matrix, dist_coeffs, aruco_dict, aruco_params = get_paras_fromapi(K)
     if camera_matrix is None:
         print("must contain camera_matrix value! ")
@@ -285,10 +317,11 @@ def detect_aruco_and_estimate_pose(image_path, marker_size, K):
 
 
 if __name__ == '__main__':
-    filename = 'C:/Users/guanl/Desktop/GenshinNerf/t10/0011.jpg'
-    half_marker_size_x = default_marker_size / 2.0
-    half_marker_size_y = half_marker_size_x
-    for key, vec in qrs_id_pos_dict.items():
-        qrs_id_pos_dict[key] = [vec[0] + half_marker_size_x, vec[1] - half_marker_size_y]
-    c2w = detect_aruco_and_estimate_pose(filename, marker_size=default_marker_size, K=None)
-    print(c2w)
+    filename = 'C:/Users/guanl/Desktop/GenshinNerf/t20/motion_U/motionU/image/0001.png'
+    # half_marker_size_x = default_marker_size / 2.0
+    # half_marker_size_y = half_marker_size_x
+    # for key, vec in qrs_id_pos_dict.items():
+    #     qrs_id_pos_dict[key] = [vec[0] + half_marker_size_x, vec[1] - half_marker_size_y]
+    c2w = detect_aruco_and_estimate_pose(filename, marker_size=default_5x7_marker_size, K=None)
+    # c2w = np.array(c2w)
+    print(str(c2w))

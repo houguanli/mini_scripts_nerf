@@ -25,8 +25,8 @@ def extract_frames_and_calib(video_path, jump_frames=1):
         "cy": cy
     }
 
-    frame_count = 0
-    save_count = 0
+    frame_count = 1
+    save_count = 1
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -48,8 +48,8 @@ def extract_frames_and_calib(video_path, jump_frames=1):
 
 if __name__ == "__main__":
 
-    video_path = "C:/Users/guanl/Desktop/GenshinNerf/t15/t15.MP4"
-    extract_frames_and_calib(video_path, jump_frames=10)
+    video_path = "C:/Users/guanl/Desktop/GenshinNerf/t20/motion_U/test.MP4"
+    extract_frames_and_calib(video_path, jump_frames=5)
 
 
 

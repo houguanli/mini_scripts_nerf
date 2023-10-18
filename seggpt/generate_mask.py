@@ -35,7 +35,7 @@ def generate_mask_from_image(input_path, display_width=1280, brush_size=200):
             if _flip==1:
                 brush_size = 10
             else:
-                brush_size = 200
+                brush_size = 100
             _flip = (_flip + 1) % 2
         elif event == cv2.EVENT_MOUSEMOVE and drawing:
             # 当鼠标拖动时，为对应区域的 brush_size x brush_size 像素设置为1
@@ -67,9 +67,48 @@ def generate_mask_from_image(input_path, display_width=1280, brush_size=200):
     cv2.imwrite(output_filename, mask_original * 255)
     cv2.destroyAllWindows()
 
+def refine_and_rename_mask(mask_path, target_format='.jpg'):
+    files = os.listdir(mask_path)
+    images = [f for f in files if f.endswith('.png') or f.endswith('.jpg')]
+    images.sort()
+    # 过滤出.png和.jpg格式的图片
+    # 开始重命名
+    for idx, image in enumerate(images, 1):
+        # 获取文件扩展名
+        ext = target_format
+        # 新名称格式：0001, 0002, ...
+        new_name = f"mask_{idx:04}{ext}"
+        # 获取图片当前的完整路径和新的完整路径
+        old_path = os.path.join(mask_path, image)
+        new_path = os.path.join(mask_path, new_name)
+        # new_path = new_path[:-3] + "png"
+        image = cv2.imread(old_path)
+        height, width, _ = image.shape
+        refined_mask = image.copy()
+
+        threshold_value = 10
+        print("converting " + old_path + " to " + new_path)
+        for y in range(height):
+            for x in range(width):
+                if all(pixel > threshold_value for pixel in image[y, x]):
+                    refined_mask[y, x] = [255, 255, 255]  # 设置为白色
+                else:
+                    refined_mask[y, x] = [0, 0, 0]  # 设置为黑色
+        # 重命名图片
+        # os.rename(old_path, new_path)
+        cv2.imwrite(new_path, refined_mask)  # overwrite the original image
+    return
+
+
+
+
+
 
 if __name__ == '__main__':
     # 使用方法
-    path = "C:/Users/GUANL/Desktop/GenshinNerf/__tmp/mask/0020.jpg"
-    path = "D:/gitwork/NeuS/public_data/rws_object2/image/0011.jpg"
-    generate_mask_from_image(path)  # 替换为你的图片路径
+    # path = "C:/Users/GUANL/Desktop/GenshinNerf/__tmp/mask/0020.jpg"
+    # path = "D:/gitwork/neus_original/public_data/rws_obj4/image/0035.png"
+    # generate_mask_from_image(path)  # 替换为你的图片路径
+    #
+    dir = 'C:/Users/GUANL/Desktop/GenshinNerf/t20/motion_U/motionU_compress/mask'
+    refine_and_rename_mask(dir)

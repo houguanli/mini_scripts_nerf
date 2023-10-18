@@ -6,7 +6,7 @@ def rename_images(directory):
     files = os.listdir(directory)
 
     # 过滤出.png和.jpg格式的图片
-    images = [f for f in files if f.endswith('.png') or f.endswith('.jpg')]
+    images = [f for f in files if f.endswith('.png') or f.endswith('.jpg') or f.endswith('.JPG')]
 
     # 确保图片数量不超过1000
     if len(images) > 1000:
@@ -19,6 +19,7 @@ def rename_images(directory):
     for idx, image in enumerate(images, 1):
         # 获取文件扩展名
         ext = os.path.splitext(image)[1]
+        # ext = '.png'
         # 新名称格式：0001, 0002, ...
         new_name = f"{idx:04}{ext}"
         # 获取图片当前的完整路径和新的完整路径
@@ -30,5 +31,7 @@ def rename_images(directory):
 
 
 if __name__ == "__main__":
-    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/__tmp'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t21/compress/mask'  # 替换为你的文件夹路径
+    # directory_path = 'D:/gitwork/neus_original/public_data/rws_obj5/mask'  # 替换为你的文件夹路径
+
     rename_images(directory_path)

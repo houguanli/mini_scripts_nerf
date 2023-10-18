@@ -101,8 +101,8 @@ def one_camera_seggpt_multi_init_static_sense_bat_maker(input_dir, output_dir, s
         file_name = f"{frame_id:04}"  # name format
         input_img_path = input_dir + "/" + file_name + "." + image_type
         # output_img_path = output_dir + "/" + file_name + "." + image_type
-        prompt_image_path = input_dir + "/" + "0001." + image_type + " " + input_dir + "/" + "0020." + image_type
-        prompt_img_mask_path = output_dir + "/" + "mask_0001." + image_type + " " + output_dir + "/" + "mask_0020." + image_type
+        prompt_image_path = input_dir + "/" + "0001." + image_type + " " + input_dir + "/" + "0010." + image_type
+        prompt_img_mask_path = output_dir + "/" + "mask_0001." + image_type + " " + output_dir + "/" + "mask_0010." + image_type
         input_para = "--input_image " + input_img_path + " "
         prompt_para = "--prompt_image " + prompt_image_path + " "
         prompt_mask_para = "--prompt_target " + prompt_img_mask_path + " "
@@ -208,17 +208,17 @@ def test_blender_static():
     return
 
 def test4():
-    image_path = "D:/gitwork/NeuS/public_data/real_world_multi_qrs/mask/0001.png"
-    input_dir = "D:/gitwork/genshinnerf/dynamic_test/image"
+    image_path = "D:/gitwork/NeuS/public_data/rws_obj4/mask/0001.png"
+    input_dir = "D:/gitwork/neus_original/public_data/rws_obj4/image"
     out_path = "D:/gitwork/genshinnerf/dynamic_test/mask"
-    out_dir = "D:/gitwork/genshinnerf/dynamic_test/mask"
+    out_dir = "D:/gitwork/neus_original/public_data/rws_obj5/mask"
     # make_init_mask()
-    # one_camera_seggpt_bat_maker_multi_init_mask(input_dir, out_dir, out_dir + "/auto.bat", frame_count=60, image_type="png")
+    # one_camera_seggpt_multi_init_static_sense_bat_maker(input_dir, out_dir, out_dir + "/auto.bat", frame_count=39, image_type="png")
     mask_path = "D:/gitwork/genshinnerf/dynamic_test/mask"
     # refine_mask(mask_path)
-
+    #
     masks_dir = out_dir
-    refine_mask_batch_motion(masks_dir, frame_count=60)
+    refine_mask_batch_static_sense_(masks_dir, frame_count=20, image_type="png")
     return
 
 def test_fill():
@@ -255,7 +255,7 @@ def test_fill():
 
 
 if __name__ == '__main__':
-    test_fill()
+    test4()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 

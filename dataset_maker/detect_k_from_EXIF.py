@@ -1,9 +1,16 @@
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 import numpy as np
+
 debug_mode = False
 
-
+default_ptz_mat = np.array([[735.15009953, 0., 961.93174061],
+               [0., 733.3960477, 553.13510509],
+               [0., 0., 1.]])  # this camera K is from a pan-tilt-zoom camera
+default_phone_mat = np.array([[3.55085455e+03, 0.00000000e+00, 2.23088539e+03],
+                        [0.00000000e+00, 3.54865667e+03, 1.67835047e+03],
+                        [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+default_ptz_mat_1280 = np.array([[490.1000663533333, 0, 641.1211604066666], [0, 488.9306984666667, 368.59007006], [0, 0, 1]])
 def extract_exif(filename):
     """提取图片的EXIF信息"""
     image = Image.open(filename)
@@ -17,7 +24,6 @@ def extract_exif(filename):
 
 
 def calculate_intrinsic_parameters(exif_data):
-
     focal_length_entry = exif_data.get('FocalLength')  # FocalLength tag
     focal_length_35mm_entry = exif_data.get('FocalLengthIn35mmFilm')  # FocalLengthIn35mmFilm tag
 
@@ -37,7 +43,7 @@ def calculate_intrinsic_parameters(exif_data):
     if debug_mode:
         print("fixed | original sensor width : " + str(sensor_width_mm) + "mm 36.0mm")
     # Assume 3:2 aspect ratio for 35mm film
-    sensor_height_mm = (2/3) * sensor_width_mm
+    sensor_height_mm = (2 / 3) * sensor_width_mm
 
     image_width = exif_data.get('ExifImageWidth')
     image_height = exif_data.get('ExifImageHeight')
@@ -47,7 +53,6 @@ def calculate_intrinsic_parameters(exif_data):
         print("img w&h " + str(image_width) + " " + str(image_height))
     fx = FL_actual / dx
     fy = FL_actual / dy
-
 
     # 假设fy与fx相同，成像中心是图像中心
     cx = image_width / 2.0
@@ -61,8 +66,13 @@ def calculate_intrinsic_parameters(exif_data):
     return K
 
 
-def get_k_from_exif(filename):
-    camera_matrix = None
+def get_k_from_exif(filename, with_default_mat='ptz'):
+    if with_default_mat == 'ptz':
+        return default_ptz_mat
+    elif with_default_mat == 'phone':
+        return default_phone_mat
+    elif with_default_mat == 'ptz_1280':
+        return default_ptz_mat_1280
     exif_data = extract_exif(filename)
     camera_matrix = calculate_intrinsic_parameters(exif_data)
 

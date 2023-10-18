@@ -90,8 +90,8 @@ if __name__ == '__main__':
     input_path = "C:/Users/guanl/Desktop/GenshinNerf/t13/static/obj_/0035-removebg.png"  # 输入图像路径
     output_path = "C:/Users/guanl/Desktop/GenshinNerf/t13/static/obj_/0035.png"  # 输出图像路径
     output_path__ = "C:/Users/guanl/Desktop/GenshinNerf/t13/static/obj_/mask_0035.jpg"  # 输出图像路径
-    output_path = "D:\\gitwork\\genshinnerf\\dynamic_test\\mask\\transform0001_mask.png"
-    output_path__ = "D:\\gitwork\\genshinnerf\\dynamic_test\\mask\\transform0001_.png"
+    output_path = "D:\\gitwork\\genshinnerf\\neus_original\\public_data\\rws_obstacle\\0042.jpg"
+    output_path__ = "D:\\gitwork\\genshinnerf\\neus_original\\public_data\\rws_obstacle\\0042__.jpg"
     new_width = 4624  # 新的宽度
     new_height = 3472  # 新的高度
     # resize_image(input_path, output_path, new_width, new_height)

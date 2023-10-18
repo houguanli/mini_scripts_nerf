@@ -29,8 +29,8 @@ def calibrate_camera(images_path_pattern, grid_size, grid_square_size):
         file_name_with_extension = os.path.basename(fname)
         case_name, file_extension = os.path.splitext(file_name_with_extension)
         case_index = int(case_name)
-        if case_index % 5 != 0:
-            continue
+        # if case_index % 5 != 0:
+        #     continue
 
         img = cv2.imread(fname)
         print("read frame name " + fname)
@@ -79,7 +79,7 @@ def generate_chessboard(size, h_c, w_c, filename='chessboard.jpg'):
 if __name__ == '__main__':
     images_path_pattern = 'C:/Users/guanl/Desktop/GenshinNerf/t9/*.jpg'
     chess_board_path = 'C:/Users/guanl/Desktop/GenshinNerf/t9/chessboard.jpg'
-    images_path_pattern = "C:/Users/guanl/Desktop/GenshinNerf/t13/dynamic/calibrate/chessboard/*.png"
+    images_path_pattern = "C:/Users/guanl/Desktop/GenshinNerf/t18/calibrate/cb_2700/*.png"
     # generate_chessboard(100, 9, 6, chess_board_path)
     # exit(0)
     grid_size = (8, 5)  # 表示棋盘上有9x6个角。
