@@ -31,7 +31,7 @@ def rename_images(directory):
 
 
 if __name__ == "__main__":
-    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t21/compress/mask'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t22/U'  # 替换为你的文件夹路径
     # directory_path = 'D:/gitwork/neus_original/public_data/rws_obj5/mask'  # 替换为你的文件夹路径
 
     rename_images(directory_path)

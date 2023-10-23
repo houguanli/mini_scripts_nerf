@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import numpy as np
 from PIL import Image
@@ -23,12 +25,15 @@ def make_init_mask(img_path, out_path):
 
 def refine_mask(img_path, convert_option=True):
     image = cv2.imread(img_path)
-    threshold_value = 150
+    threshold_value = 100
     height, width, _ = image.shape
     refined_mask = image.copy()
     for y in range(height):
         for x in range(width):
-            if all(pixel > threshold_value for pixel in image[y, x]):
+            pixel_sum = sum(image[y, x] ) + 0.
+            # if all(pixel > threshold_value for pixel in image[y, x]):
+            if pixel_sum > threshold_value:
+
                 if convert_option:
                     refined_mask[y, x] = [0, 0, 0]  # 设置为黑色
                 else:
@@ -54,6 +59,28 @@ def resize_image(input_path, output_path, new_width, new_height):
         print(f"图像已调整大小并保存到 {output_path}")
     except Exception as e:
         print(f"发生错误: {e}")
+
+
+def refine_all_mask(directory):
+    files = os.listdir(directory)
+
+    # 过滤出.png和.jpg格式的图片
+    images = [f for f in files if f.endswith('.png') or f.endswith('.jpg') or f.endswith('.JPG')]
+    if len(images) > 1000:
+        raise ValueError("图片数量超过1000张!")
+    # 对图片进行排序，这样我们在重命名时不会遗漏任何图片
+    images.sort()
+    for idx, image in enumerate(images, 1):
+        # 获取文件扩展名
+        ext = os.path.splitext(image)[1]
+        # ext = ".png"
+        # 新名称格式：0001, 0002, ...
+        new_name = f"mask_{idx:04}{ext}"
+        # 获取图片当前的完整路径和新的完整路径
+        old_path = os.path.join(directory, image)
+        # new_path = os.path.join(directory, new_name)
+        refine_mask(old_path, convert_option=False)
+        # 重命名图片
 
 
 def keep_largest_white_area(image_path):
@@ -92,8 +119,10 @@ if __name__ == '__main__':
     output_path__ = "C:/Users/guanl/Desktop/GenshinNerf/t13/static/obj_/mask_0035.jpg"  # 输出图像路径
     output_path = "D:\\gitwork\\genshinnerf\\neus_original\\public_data\\rws_obstacle\\0042.jpg"
     output_path__ = "D:\\gitwork\\genshinnerf\\neus_original\\public_data\\rws_obstacle\\0042__.jpg"
+    output_path = "C:/Users/GUANL/Desktop/GenshinNerf/dp_simulation/bunny_drop/motion/mask"
+
     new_width = 4624  # 新的宽度
     new_height = 3472  # 新的高度
     # resize_image(input_path, output_path, new_width, new_height)
-    make_init_mask(output_path, output_path__)
+    refine_all_mask(output_path)
     # keep_largest_white_area(output_path__)

@@ -43,7 +43,7 @@ def rename_images_in_folder(folder_path):
     return counter
 
 
-def calc_json(file_dict, count_imgs, img_type=".jpg", with_default_mat='ptz'):  # IMPORTANT:: c2w == M for Neus calculation
+def calc_json(file_dict, count_imgs, img_type=".jpg", with_default_mat='ptz_1920'):  # IMPORTANT:: c2w == M for Neus calculation
     dict = {}
     success_count = 0
     for idx in range(0, count_imgs):
@@ -90,9 +90,9 @@ def calc_json(file_dict, count_imgs, img_type=".jpg", with_default_mat='ptz'):  
 
 
 if __name__ == "__main__":
-    folder_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t21/compress/image'
+    folder_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t22/U/compress/image'
 
     # folder_path = 'D:/gitwork/NeuS/public_data/real_world_multi_qrs/mask'
 
     # count = rename_images_in_folder(folder_path)
-    calc_json(folder_path, count_imgs=20, img_type=".png", with_default_mat='ptz_1280')
+    calc_json(folder_path, count_imgs=39, img_type=".jpg", with_default_mat='ptz_1920')

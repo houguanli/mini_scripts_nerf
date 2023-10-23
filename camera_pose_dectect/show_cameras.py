@@ -189,19 +189,21 @@ if __name__ == '__main__':
     cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t11/camera.json'
     cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t16/frames/airphone/t16/camera.json'
     # cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/dp_simulation/duck/duck_3d/cameras.json'
-    cameras_path = 'D:/gitwork/neus_original/public_data/rws_obj5/cameras_sphere.json'
+    cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t22/U/compress/image/cameras_sphere.json'
 
-    cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t21/compress/cameras_sphere.json'
+    # cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t21/compress/cameras_sphere.json'
+    # cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/dp_simulation/bunny_drop/0000/cameras_blender.json'
+
     npz_path = "D:/gitwork/NeuS/public_data/bird/cameras_large.npz"
     # cameras_path = 'C:/Users/guanl/Desktop/face_video/front/sparse/1/cameras_sphere.json'
-    # reformat_blender_mat(cameras_path, frames=20)
+    # reformat_blender_mat(cameras_path, frames=60)
     # new_K = [[393.1742062283737, 0, 246.57381480968857], [0, 392.47815705069127, 185.1793146543779], [0, 0, 1]]
     # replace_k_mat(cameras_path, new_K=new_K)
     # exit()
 
     # npz_dict = load_npz_to_dict(npz_path)
 
-    Ks, Ts_inv = read_cameras_from_json(cameras_path, frames=20)
+    Ks, Ts_inv = read_cameras_from_json(cameras_path, frames=39)
     # import pdbDDD
     # pdb.set_trace()
     cameras = ct.camera.create_camera_ray_frames(Ks, Ts_inv)

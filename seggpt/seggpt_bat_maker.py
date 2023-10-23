@@ -211,7 +211,7 @@ def test4():
     image_path = "D:/gitwork/NeuS/public_data/rws_obj4/mask/0001.png"
     input_dir = "D:/gitwork/neus_original/public_data/rws_obj4/image"
     out_path = "D:/gitwork/genshinnerf/dynamic_test/mask"
-    out_dir = "D:/gitwork/neus_original/public_data/rws_obj5/mask"
+    out_dir = "C:/Users/GUANL/Desktop/GenshinNerf/dp_simulation/duck/duck_3d/mask"
     # make_init_mask()
     # one_camera_seggpt_multi_init_static_sense_bat_maker(input_dir, out_dir, out_dir + "/auto.bat", frame_count=39, image_type="png")
     mask_path = "D:/gitwork/genshinnerf/dynamic_test/mask"

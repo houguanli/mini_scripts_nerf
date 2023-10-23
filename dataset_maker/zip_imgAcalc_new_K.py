@@ -6,7 +6,7 @@ from PIL import Image
 from PIL.Image import Resampling
 from scipy import ndimage
 
-default_original_K = [[3.55085455e+03, 0.00000000e+00, 2.23088539e+03],
+default_original_phone_K = [[3.55085455e+03, 0.00000000e+00, 2.23088539e+03],
                       [0.00000000e+00, 3.54865667e+03, 1.67835047e+03],
                       [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
 dynamic_original_K = [[735.15009953, 0., 961.93174061],
@@ -15,7 +15,8 @@ dynamic_original_K = [[735.15009953, 0., 961.93174061],
 dynamic_K_1280 = [[490.1000663533333, 0, 641.1211604066666], [0, 488.9306984666667, 368.59007006], [0, 0, 1]]
 dynamic_K_512 = []
 
-def resize_images(directory, original_K=None):
+
+def resize_images(directory, original_K=None, replace_json_file=None):
     # 获取文件夹中的所有文件
     if original_K is None:
         original_K = dynamic_original_K
@@ -44,6 +45,14 @@ def resize_images(directory, original_K=None):
                   [0, f_new_y, c_new_y],
                   [0, 0, 1]]
     print("cacl new K: " + str(new_calc_k))
+    all_json, original_camera_json = None, None
+    if replace_json_file is not None or str(replace_json_file)=="":
+        print("replacing new K in " + replace_json_file)
+        all_json = {}
+        with open(str(replace_json_file), 'r') as f:
+            original_camera_json = json.load(f)
+    else:
+        print("No json to be replace")
 
     # begin compress
     for idx, image in enumerate(images, 1):
@@ -61,14 +70,31 @@ def resize_images(directory, original_K=None):
         if not os.path.exists(new_folder):
             os.mkdir(new_folder)
         new_path = os.path.join(new_folder, new_name)
-        # 重命名图片
-        # os.rename(old_path, new_path)
         resized_img.save(new_path)
         print(f"Resized {image} to {new_path}")
-
+        if all_json is not None:
+            template_name = str(idx + 1) + "_1"
+            K_name = template_name + "_K"
+            T_name = template_name + "_M"
+            T_inv_name = template_name + "_M_inv"
+            try:
+                k = np.array(new_calc_k)
+                t = np.array(original_camera_json[T_name])
+                all_json[K_name] = k.tolist()
+                all_json[T_name] = t.tolist()
+                all_json[T_inv_name] = (np.linalg.inv(t)).tolist()
+            except:
+                print("err at get " + K_name)
+                continue
+    if all_json is not None:  # write out new calc json file
+        print("re-f all json \n")
+        print(all_json)
+        with open(replace_json_file, 'w') as f:  # replace old one
+            json.dump(all_json, f, indent=4)
+        return
 
 if __name__ == "__main__":
-    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t21/compress'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t22/U'  # 替换为你的文件夹路径
     # directory_path = 'D:/gitwork/neus_original/public_data/rws_obj5/image'  # 替换为你的文件夹路径
 
     resize_images(directory_path)
