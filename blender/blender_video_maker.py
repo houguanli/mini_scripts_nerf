@@ -19,7 +19,7 @@ def create_dynamic_video(image_folder, frame_count, frame_duration=0.02, output_
 
     # 读取图像并添加到图像列表
     for i in range(1, frame_count + 1):
-        image_file = f"{i}_1.png"  # 假设图像格式为PNG
+        image_file = f"{i:04}.png"  # 假设图像格式为PNG
         image_path = os.path.join(image_folder, image_file)
         img = Image.open(image_path)
         images.append(img)
@@ -42,4 +42,6 @@ def create_dynamic_video(image_folder, frame_count, frame_duration=0.02, output_
 
 if __name__ == '__main__':
     # 例如，生成一个包含 30 帧的动态 GIF 图像
-    create_dynamic_video("C:/Users/guanl/Desktop/GenshinNerf/t12/images", frame_count=50, frame_duration=0.02)
+    output_path = "C:/Users/guanl/Desktop/GenshinNerf/reflect_bunny_torch_base/motion/bunny_only/render_results_cmp"
+
+    create_dynamic_video(output_path, frame_count=19, frame_duration=0.02)

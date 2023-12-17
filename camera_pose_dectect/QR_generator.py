@@ -19,11 +19,11 @@ def create_aruco_board_image(output_path="frame.png", markersX=1, markersY=1, ma
     """
     width = markersX * (markerLength + markerSeparation) - markerSeparation + 2 * margins
     height = markersY * (markerLength + markerSeparation) - markerSeparation + 2 * margins
-    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
+    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
     size_t = 10  # 示例，你可以设置为任何整数值
     ids = np.array(list(range(1, size_t + 1)))
     # 生成aruco的格子，或者生成1个aruco,(1, 1)表示生成了1行1列
-    board = cv2.aruco.GridBoard((3, 3), 0.015, 0.011, dictionary)
+    board = cv2.aruco.GridBoard((1, 4), 0.015, 0.011, dictionary)
     # board = cv2.aruco.CharucoBoard((11, 8), 0.015, 0.011, dictionary)
     img = cv2.aruco.Board.generateImage(board, (width, height), 0, 1)
     img1 = cv2.aruco.Board.generateImage(board, (width, height), 20, 20)

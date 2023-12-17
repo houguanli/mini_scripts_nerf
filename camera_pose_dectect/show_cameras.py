@@ -189,10 +189,11 @@ if __name__ == '__main__':
     cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t11/camera.json'
     cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t16/frames/airphone/t16/camera.json'
     # cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/dp_simulation/duck/duck_3d/cameras.json'
-    cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t22/U/compress/image/cameras_sphere.json'
+    cameras_path = 'C:/Users/guanl/Desktop/GenshinNerf/slip_bunny/motion/bunny_only/static/cameras_sphere.json'
 
     # cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t21/compress/cameras_sphere.json'
     # cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/dp_simulation/bunny_drop/0000/cameras_blender.json'
+    cameras_path = 'D:/gitwork/neus_original/public_data/bunny2/cameras_sphere.json'
 
     npz_path = "D:/gitwork/NeuS/public_data/bird/cameras_large.npz"
     # cameras_path = 'C:/Users/guanl/Desktop/face_video/front/sparse/1/cameras_sphere.json'
@@ -203,7 +204,7 @@ if __name__ == '__main__':
 
     # npz_dict = load_npz_to_dict(npz_path)
 
-    Ks, Ts_inv = read_cameras_from_json(cameras_path, frames=39)
+    Ks, Ts_inv = read_cameras_from_json(cameras_path, frames=60)
     # import pdbDDD
     # pdb.set_trace()
     cameras = ct.camera.create_camera_ray_frames(Ks, Ts_inv)

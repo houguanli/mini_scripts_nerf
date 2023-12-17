@@ -4,7 +4,7 @@ import numpy as np
 debug_mode = False
 
 
-def get_paras_fromapi(K = None):
+def get_paras_fromapi(K=None, dict_type="5X5"):
     """
     Fetch the camera intrinsic parameters, ArUco dictionary and parameters from an API or predefined settings.
 
@@ -20,7 +20,13 @@ def get_paras_fromapi(K = None):
     dist_coeffs = np.zeros((4,1))  # Assuming no lens distortion
 
     # Define ArUco dictionary and parameters
-    aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
+    if dict_type == "5X5":
+        aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
+    elif dict_type == "6X6":
+        aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+    else:
+        print("invalid dict type ! Exiting")
+        exit(-1)
     aruco_params = cv2.aruco.DetectorParameters()
     return camera_matrix, dist_coeffs, aruco_dict, aruco_params
 

@@ -4,7 +4,8 @@ import numpy as np
 # red axis refers to X and green refers to Y
 debug_mode = True
 show_res_img = False
-mode_dict = {'EXIF_mode': 'EXIF_mode', 'chessboard_mode': 'chessboard_mode', 'dynamic_camera_mode':'dynamic_camera_mode'}
+mode_dict = {'EXIF_mode': 'EXIF_mode', 'chessboard_mode': 'chessboard_mode',
+             'dynamic_camera_mode': 'dynamic_camera_mode'}
 ar_set_modes = ["wood_mode", "a4_mode"]
 K_mode = 'dynamic_camera_mode'
 qr_move_vector = []
@@ -12,7 +13,7 @@ qr_code_length = 0.024  # the size of the qr code
 board_length = 0.61  # the length of the test board
 default_marker_size = 0.031
 default_5x7_marker_size = 0.0185
-arcuo_size_5x7e=0.0185
+arcuo_size_5x7e = 0.0185
 default_camera_EXIF_K = [[3.21111111e+03, 0.00000000e+00, 2.31200000e+03],
                          [0.00000000e+00, 3.61666667e+03, 1.73600000e+03],
                          [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]  # default camera mat
@@ -26,12 +27,16 @@ dynamic_camera_K = [[735.15009953, 0., 961.93174061],
 dynamic_camera_K_2700 = [[1.20204328e+03, 0.00000000e+00, 1.36849027e+03],
                          [0.00000000e+00, 1.19620501e+03, 7.01540732e+02],
                          [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
+dynaimic_phone_K_yuanmu_1920 = [[1.52617212e+03, 7.74540422e-06, 9.46001160e+02],
+                                [0.00000000e+00, 1.59729663e+03, 7.31382629e+02],
+                                [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
+
 cmp_diff_pixel = 1.525774468624755  # if this is less than 1, it will be a good assm
 cmp_diff_dynamic_camera_pixel_2700 = 0.9102474884918834
 cmp_diff_dynamic_camera_pixel = 0.8204705806151762
 default_chessboard_coeffs = np.array([4.25182401e-02, 3.70250319e-01, 4.63505072e-04, -3.93194259e-03])
 dynamic_camera_chessboard_coeffs = np.array([0.00948553, -0.02774021, 0.00214638, 0.02973592])
-dynamic_camera_chessboard_coeffs_2700 = np.array([0.02870973, -0.04853193, -0.0049702,   0.0004024,   0.03914582])
+dynamic_camera_chessboard_coeffs_2700 = np.array([0.02870973, -0.04853193, -0.0049702, 0.0004024, 0.03914582])
 
 idol_coeffs = np.zeros(4)
 qrs_id_pos_dict_old = {
@@ -82,10 +87,12 @@ def init_qrs_id_dict_a4(row_count=5, col_count=7, arcuo_size=0.0185, boarder_siz
 
     return tmp_dict
 
+
 qrs_id_dict_wood = init_qrs_id_dict_wood()
 qrs_id_dict_a4 = init_qrs_id_dict_a4()
 
-def get_paras_fromapi(K=None):
+
+def get_paras_fromapi(K=None, dict_type="5X5"):
     """
     Fetch the camera intrinsic parameters, ArUco dictionary and parameters from an API or predefined settings.
 
@@ -104,13 +111,23 @@ def get_paras_fromapi(K=None):
         elif K_mode == mode_dict['dynamic_camera_mode']:
             K = dynamic_camera_K
             dist_coeffs = dynamic_camera_chessboard_coeffs
+        elif K_mode == mode_dict['sp_mode']:
+            K = dynaimic_phone_K_yuanmu_1920
+            dist_coeffs = idol_coeffs
         else:
             print("no such mode! please make sure about it!")
             exit(0)
     camera_matrix = np.array(K)
 
     # Define ArUco dictionary and parameters
-    aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
+    if dict_type == "5X5":
+        aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
+    elif dict_type == "6X6":
+        aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+    else:
+        print("invalid dict type ! Exiting")
+        exit(-1)
+
     aruco_params = cv2.aruco.DetectorParameters()
     return camera_matrix, dist_coeffs, aruco_dict, aruco_params
 
@@ -143,6 +160,8 @@ def re_estimate_pose(id__, rvec, tvec, arcuo_mode="a4_mode"):
         tmp_qr2world = np.array([[qrs_id_dict_a4[str(id__)][0]], [qrs_id_dict_a4[str(id__)][1]], [0.]])
     elif arcuo_mode == "wood_mode":
         tmp_qr2world = np.array([[qrs_id_dict_wood[str(id__)][0]], [qrs_id_dict_wood[str(id__)][1]], [0.]])
+    elif arcuo_mode == "single_mode":
+        tmp_qr2world = np.zeros([3, 1])
     else:
         print("ERR! mode is not set correctly!")
         exit(-1)
@@ -151,7 +170,7 @@ def re_estimate_pose(id__, rvec, tvec, arcuo_mode="a4_mode"):
     return rvec, tvec
 
 
-def calc_extrinsic_mat_from__avg_vecs(rvecs, tvecs, threshold=20.0, threshold2=20.0):
+def calc_extrinsic_mat_from__avg_vecs(rvecs, tvecs, threshold=20.0, threshold2=20.0, muti_qr_mode="multi_mode"):
     """this function gets a set of rvecs, tvecs generated from arcuo, then cal is avg, and remove outliers"""
     """at last, cal a ex mat (c2w mat) from the avg tvecs & rvecs and return it """
 
@@ -187,54 +206,71 @@ def calc_extrinsic_mat_from__avg_vecs(rvecs, tvecs, threshold=20.0, threshold2=2
         largest_group = max(groups, key=len)
         return np.array(largest_group)[:, :3], np.array(largest_group)[:, 3:]
 
-    rvecs = np.array(rvecs).squeeze()
-    tvecs = np.array(tvecs).squeeze()
-    rvecs, tvecs = group_vectors(rvecs, tvecs, threshold2)
+
+    print(len(rvecs))
+    if muti_qr_mode == "single_mode":
+        rvecs, tvecs = rvecs, tvecs
+    elif muti_qr_mode is not None:
+        rvecs = np.array(rvecs).squeeze()
+        tvecs = np.array(tvecs).squeeze()
+        rvecs, tvecs = group_vectors(rvecs, tvecs, threshold2)
+    else:
+        print("err for not specified qr mode! ")
+        exit(-1)
 
     if debug_mode:
         print("-------------|largest group hold vecs R|-----------")
         print(rvecs)
         print("-------------|largest group hold vecs T|-----------")
         print(tvecs)
-    while True:
-        # 计算平均值
-        rvecs_mean = np.mean(rvecs, axis=0)
-        tvecs_mean = np.mean(tvecs, axis=0)
-        # 计算rvecs和tvecs与其对应平均值的差值的比例
-        outliers = []
-        holder_r = []
-        holder_t = []
-        for i in range(0, rvecs.shape[0]):
-            rvecs_diff_ratio = np.linalg.norm(rvecs[i] - rvecs_mean) / np.linalg.norm(rvecs_mean) * 100
-            tvecs_diff_ratio = np.linalg.norm(tvecs[i] - tvecs_mean) / np.linalg.norm(tvecs_mean) * 100
-            # 找出超出阈值的项
-            if rvecs_diff_ratio > threshold or tvecs_diff_ratio > threshold:
-                outliers.append(i)
-                if debug_mode:
-                    print("Removing outliers: ")
-                    print("Rvecs: \n", rvecs[outliers])
-                    print("Tvecs: \n", tvecs[outliers])
-            else:
-                holder_r.append(rvecs[i])
-                holder_t.append(tvecs[i])
 
-        # 如果没有超出阈值的数据，就跳出循环
-        if not np.any(outliers):
-            break
-        # 打印并移除超出阈值的数据
+    if muti_qr_mode == "single_mode":
+        rvec = rvecs[0]
+        tvec = tvecs[0]
+        rvec = rvec.reshape(-1, 1)
+        tvec = tvec.reshape(-1, 1)
+    elif muti_qr_mode is not None:
+        while True:
+            # 计算平均值
+            rvecs_mean = np.mean(rvecs, axis=0)
+            tvecs_mean = np.mean(tvecs, axis=0)
+            # 计算rvecs和tvecs与其对应平均值的差值的比例
+            outliers = []
+            holder_r = []
+            holder_t = []
+            for i in range(0, rvecs.shape[0]):
+                rvecs_diff_ratio = np.linalg.norm(rvecs[i] - rvecs_mean) / np.linalg.norm(rvecs_mean) * 100
+                tvecs_diff_ratio = np.linalg.norm(tvecs[i] - tvecs_mean) / np.linalg.norm(tvecs_mean) * 100
+                # 找出超出阈值的项
+                if rvecs_diff_ratio > threshold or tvecs_diff_ratio > threshold:
+                    outliers.append(i)
+                    if debug_mode:
+                        print("Removing outliers: ")
+                        print("Rvecs: \n", rvecs[outliers])
+                        print("Tvecs: \n", tvecs[outliers])
+                else:
+                    holder_r.append(rvecs[i])
+                    holder_t.append(tvecs[i])
 
-        rvecs = np.array(holder_r)
-        tvecs = np.array(holder_t)
+            # 如果没有超出阈值的数据，就跳出循环
+            if not np.any(outliers):
+                break
+            # 打印并移除超出阈值的数据
+
+            rvecs = np.array(holder_r)
+            tvecs = np.array(holder_t)
+        rvec = np.mean(rvecs, axis=0)
+        tvec = np.mean(tvecs, axis=0)
+        rvec = rvec.reshape(-1, 1)
+        tvec = tvec.reshape(-1, 1)
+    else:
+        print("err for not specified qr mode! ")
+        exit(-1)
     if debug_mode:
         print("-------------|final hold vecs R|-----------")
         print(rvecs)
         print("-------------|final hold vecs T|-----------")
         print(tvecs)
-    rvec = np.mean(rvecs, axis=0)
-    tvec = np.mean(tvecs, axis=0)
-    rvec = rvec.reshape(-1, 1)
-    tvec = tvec.reshape(-1, 1)
-
     # generate world to camera mat
     rmat, _ = cv2.Rodrigues(rvec)
     transform_matrix = np.zeros((4, 4))
@@ -249,15 +285,20 @@ def calc_extrinsic_mat_from__avg_vecs(rvecs, tvecs, threshold=20.0, threshold2=2
     return transform_matrix, c2w_mat
 
 
-def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug = False):
-
+def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug=False, muti_qr_mode="a4_mode", dict_type=None, K_mode="dynamic_camera_mode"):
     """
     Detect ArUco markers and estimate pose.
     :param image_path: Path to the image containing ArUco markers.
     :return: List of detected marker corners and their IDs, and rotation and translation vectors for each marker.
+
+    Args:
+        muti_qr_mode: the type that qr code arranges, current is single, 3x3, A4 (5X7) THREE modes
     """
+    if dict_type is None:
+        dict_type = "5X5"
+        #use 5x5 as for debug
     debug_mode = require_debug
-    camera_matrix, dist_coeffs, aruco_dict, aruco_params = get_paras_fromapi(K)
+    camera_matrix, dist_coeffs, aruco_dict, aruco_params = get_paras_fromapi(K, dict_type)
     if camera_matrix is None:
         print("must contain camera_matrix value! ")
         exit(-1)
@@ -280,21 +321,18 @@ def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug = F
             # Draw detected markers
             id__ = int(ids[i][0])  # actually rvec equals rvec_ as all arcuo codes lie in the XOY plane
             rvec, tvec, _objPoints = estimate_pose_single_marker(corner__, marker_size, camera_matrix, dist_coeffs)
-            _rvec, _tvec = re_estimate_pose(id__, rvec, tvec)
+            _rvec, _tvec = re_estimate_pose(id__, rvec, tvec, muti_qr_mode)
             rvecs.append(_rvec)
             tvecs_.append(_tvec)
             if debug_mode:
                 print(f"Rotation vector for QR code :\n", rvec)
                 # print("re-detect Translation vector :\n", _tvec)
                 # print(f"Translation vector for QR code :\n", tvec)
-                # print(f"w2c :\n", transform_matrix)
                 # print(f"c2w :\n", c2w_mat)
-                # print(f"w2c :\n", transform_matrix)
-                print("detected id of qr code " + str(id__))
+                # print("detected id of qr code " + str(id__))
                 print("------------------------------------")
             if show_res_img:
                 cv2.namedWindow("Aruco Detection", 0)
-
                 img_ = cv2.imread(image_path)
                 font_scale = 3  # 设置字体大小
                 font_color = (0, 0, 255)  # 设置字体颜色
@@ -308,7 +346,7 @@ def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug = F
                 cv2.imshow("Aruco Detection", image)
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
-        w2c_mat, c2w_mat = calc_extrinsic_mat_from__avg_vecs(rvecs, tvecs_)
+        w2c_mat, c2w_mat = calc_extrinsic_mat_from__avg_vecs(rvecs, tvecs_, muti_qr_mode=muti_qr_mode)
 
     else:
         print("detect failed in " + image_path)
@@ -317,11 +355,17 @@ def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug = F
 
 
 if __name__ == '__main__':
-    filename = 'C:/Users/guanl/Desktop/GenshinNerf/t20/motion_U/motionU/image/0001.png'
+    filename = 'C:/Users/guanl/Desktop/GenshinNerf/tmp/0001.jpg'
     # half_marker_size_x = default_marker_size / 2.0
     # half_marker_size_y = half_marker_size_x
     # for key, vec in qrs_id_pos_dict.items():
     #     qrs_id_pos_dict[key] = [vec[0] + half_marker_size_x, vec[1] - half_marker_size_y]
-    c2w = detect_aruco_and_estimate_pose(filename, marker_size=default_5x7_marker_size, K=None)
-    # c2w = np.array(c2w)
-    print(str(c2w))
+    # c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.022, K=None)
+
+    # this code is a example for single 6x6 qr detection:
+    # the marker size is 2.8 cm, K (intrinsic mode is dynaimic_phone_K_yuanmu_1920)
+    filename = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap1_qr1/preprocessed/image/000.png'
+    show_res_img = False
+    c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.028, K=None, dict_type="6X6", require_debug=False, muti_qr_mode="single_mode", K_mode="sp_mode")
+
+    print((c2w))

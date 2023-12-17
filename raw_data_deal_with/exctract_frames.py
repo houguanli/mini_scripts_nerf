@@ -11,7 +11,7 @@ def extract_frames_and_calib(video_path, jump_frames=1):
         return
 
     # 创建一个文件夹来保存帧
-    dir_name = os.path.splitext(video_path)[0]
+    dir_name = os.path.splitext(video_path)[0] + "/raw"
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
 
@@ -33,23 +33,23 @@ def extract_frames_and_calib(video_path, jump_frames=1):
             break
 
         if frame_count % jump_frames == 0:
-            frame_name = os.path.join(dir_name, f"{save_count:04}.png")
+            frame_name = os.path.join(dir_name, f"{save_count:03}.png")
             cv2.imwrite(frame_name, frame)
             save_count += 1
 
         frame_count += 1
 
     cap.release()
-
-    # 保存内参矩阵到JSON文件
-    with open(os.path.join(dir_name, "intrinsic_matrix.json"), "w") as json_file:
-        json.dump(intrinsic_matrix, json_file, indent=4)
+    #
+    # # 保存内参矩阵到JSON文件
+    # with open(os.path.join(dir_name, "intrinsic_matrix.json"), "w") as json_file:
+    #     json.dump(intrinsic_matrix, json_file, indent=4)
 
 
 if __name__ == "__main__":
 
-    video_path = "C:/Users/guanl/Desktop/GenshinNerf/t20/motion_U/test.MP4"
-    extract_frames_and_calib(video_path, jump_frames=5)
+    video_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/soap/qr1.mp4"
+    extract_frames_and_calib(video_path, jump_frames=10)
 
 
 

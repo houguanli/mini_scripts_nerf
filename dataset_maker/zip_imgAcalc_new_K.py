@@ -19,7 +19,7 @@ dynamic_K_512 = []
 def resize_images(directory, original_K=None, replace_json_file=None):
     # 获取文件夹中的所有文件
     if original_K is None:
-        original_K = dynamic_original_K
+        original_K = default_original_phone_K
     files = os.listdir(directory)
 
     # 过滤出.png和.jpg格式的图片
@@ -73,7 +73,7 @@ def resize_images(directory, original_K=None, replace_json_file=None):
         resized_img.save(new_path)
         print(f"Resized {image} to {new_path}")
         if all_json is not None:
-            template_name = str(idx + 1) + "_1"
+            template_name = str(idx) + "_1"
             K_name = template_name + "_K"
             T_name = template_name + "_M"
             T_inv_name = template_name + "_M_inv"
@@ -94,7 +94,8 @@ def resize_images(directory, original_K=None, replace_json_file=None):
         return
 
 if __name__ == "__main__":
-    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t22/U'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/card_rw'  # 替换为你的文件夹路径
+    tar_json_path = 'C:/Users/guanl/Desktop/GenshinNerf/card_rw/compress/cameras_sphere.json'  # 替换为你的文件夹路径
     # directory_path = 'D:/gitwork/neus_original/public_data/rws_obj5/image'  # 替换为你的文件夹路径
 
-    resize_images(directory_path)
+    resize_images(directory_path, replace_json_file=tar_json_path)

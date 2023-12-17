@@ -1,0 +1,12 @@
+# Blender MTL File: 'motion_creater_original.blend'
+# Material Count: 1
+
+newmtl Default_OBJ.004
+Ns 2.250001
+Ka 1.000000 1.000000 1.000000
+Kd 0.000000 0.064240 1.000000
+Ks 0.540909 0.540909 0.540909
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2

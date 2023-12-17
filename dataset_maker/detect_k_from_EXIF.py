@@ -80,6 +80,8 @@ def get_k_from_exif(filename, with_default_mat='ptz_1920'):
         exif_data = extract_exif(filename)
         camera_matrix = calculate_intrinsic_parameters(exif_data)
         return camera_matrix
+    elif with_default_mat is None:
+        return None
     else:
         print("Invaild mat type!!!! with " + with_default_mat)
         exit(-1)

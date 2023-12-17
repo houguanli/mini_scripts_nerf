@@ -43,11 +43,12 @@ def rename_images_in_folder(folder_path):
     return counter
 
 
-def calc_json(file_dict, count_imgs, img_type=".jpg", with_default_mat='ptz_1920'):  # IMPORTANT:: c2w == M for Neus calculation
+def calc_json(file_dict, count_imgs, img_type=".jpg", with_default_mat='ptz_1920', arcuo_type=None):  # IMPORTANT:: c2w == M for Neus calculation
     dict = {}
     success_count = 0
+    if arcuo_type is None:
+        arcuo_type = detect_from_multi_arcuo
     for idx in range(0, count_imgs):
-
         filename = file_dict + "/" + f'{idx + 1:04d}' + img_type
         if debug_mode:
             print("run at " + filename)
@@ -56,14 +57,14 @@ def calc_json(file_dict, count_imgs, img_type=".jpg", with_default_mat='ptz_1920
             print("ERR AT detect K for " + filename)
             continue
         try:
-            if detect_from_multi_arcuo == 'multi_3x3':
+            if arcuo_type == 'multi_3x3':
                 c2w = detect_c2w_from_3x3qrs.detect_aruco_and_estimate_pose(filename, 0.031, K)
-            elif detect_from_multi_arcuo == 'single_arcuo':
-                c2w = detect_single_w2c_from_qr.detect_aruco_and_estimate_pose(filename, 0.036, None)
-            elif detect_from_multi_arcuo == 'multi_5x7':
+            elif arcuo_type == 'single_arcuo':
+                c2w = detect_single_w2c_from_qr.detect_aruco_and_estimate_pose(filename, 0.028, K)
+            elif arcuo_type == 'multi_5x7':
                 c2w = detect_c2w_from_3x3qrs.detect_aruco_and_estimate_pose(filename, 0.0185, K)
             else:
-                print("mode set failed! with mode: " + detect_from_multi_arcuo)
+                print("mode set failed! with mode: " + arcuo_type)
                 exit(-1)
 
             if debug_mode:
@@ -90,9 +91,9 @@ def calc_json(file_dict, count_imgs, img_type=".jpg", with_default_mat='ptz_1920
 
 
 if __name__ == "__main__":
-    folder_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t22/U/compress/image'
+    folder_path = 'C:/Users/guanl/Desktop/GenshinNerf/tmp'
 
     # folder_path = 'D:/gitwork/NeuS/public_data/real_world_multi_qrs/mask'
 
     # count = rename_images_in_folder(folder_path)
-    calc_json(folder_path, count_imgs=39, img_type=".jpg", with_default_mat='ptz_1920')
+    calc_json(folder_path, count_imgs=3, img_type=".jpg", with_default_mat='phone', arcuo_type="multi_5x7")
