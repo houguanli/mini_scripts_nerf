@@ -5,9 +5,9 @@ import numpy as np
 debug_mode = True
 show_res_img = False
 mode_dict = {'EXIF_mode': 'EXIF_mode', 'chessboard_mode': 'chessboard_mode',
-             'dynamic_camera_mode': 'dynamic_camera_mode'}
+             'dynamic_camera_mode': 'dynamic_camera_mode', 'sp_mode': 'sp_mode'}
 ar_set_modes = ["wood_mode", "a4_mode"]
-K_mode = 'dynamic_camera_mode'
+# K_mode = 'dynamic_camera_mode'
 qr_move_vector = []
 qr_code_length = 0.024  # the size of the qr code
 board_length = 0.61  # the length of the test board
@@ -92,7 +92,7 @@ qrs_id_dict_wood = init_qrs_id_dict_wood()
 qrs_id_dict_a4 = init_qrs_id_dict_a4()
 
 
-def get_paras_fromapi(K=None, dict_type="5X5"):
+def get_paras_fromapi(K=None, dict_type="5X5", K_mode = mode_dict['EXIF_mode']):
     """
     Fetch the camera intrinsic parameters, ArUco dictionary and parameters from an API or predefined settings.
 
@@ -152,7 +152,7 @@ def estimate_pose_single_marker(corner, marker_size, mtx, distortion):
     return rvec, tvec, trash
 
 
-def re_estimate_pose(id__, rvec, tvec, arcuo_mode="a4_mode"):
+def re_estimate_pose(id__, rvec, tvec, arcuo_mode="a4_mode", id=0):
     """ this cal a new r_ mat, scr it if bug occurs"""
     """the target 3x3 qr code has its own position to original point"""
     rmat, _ = cv2.Rodrigues(rvec)  # cal rotation mat
@@ -285,20 +285,22 @@ def calc_extrinsic_mat_from__avg_vecs(rvecs, tvecs, threshold=20.0, threshold2=2
     return transform_matrix, c2w_mat
 
 
-def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug=False, muti_qr_mode="a4_mode", dict_type=None, K_mode="dynamic_camera_mode"):
+def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug=False, muti_qr_mode="a4_mode", dict_type=None, K_mode="dynamic_camera_mode", only_id=-1):
     """
     Detect ArUco markers and estimate pose.
     :param image_path: Path to the image containing ArUco markers.
     :return: List of detected marker corners and their IDs, and rotation and translation vectors for each marker.
 
     Args:
+        muti_qr_mode:
+        require_debug: if use debug as output
         muti_qr_mode: the type that qr code arranges, current is single, 3x3, A4 (5X7) THREE modes
     """
     if dict_type is None:
         dict_type = "5X5"
         #use 5x5 as for debug
     debug_mode = require_debug
-    camera_matrix, dist_coeffs, aruco_dict, aruco_params = get_paras_fromapi(K, dict_type)
+    camera_matrix, dist_coeffs, aruco_dict, aruco_params = get_paras_fromapi(K, dict_type, K_mode=K_mode)
     if camera_matrix is None:
         print("must contain camera_matrix value! ")
         exit(-1)
@@ -306,6 +308,7 @@ def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug=Fal
         print("Running with the  calc K_mode as : " + K_mode)
     # Load the image
     image = cv2.imread(image_path)
+    # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     detector = cv2.aruco.ArucoDetector(aruco_dict, aruco_params)
 
     # Detect ArUco markers
@@ -355,17 +358,18 @@ def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug=Fal
 
 
 if __name__ == '__main__':
-    filename = 'C:/Users/guanl/Desktop/GenshinNerf/tmp/0001.jpg'
+    filename = 'C:/Users/guanl/Desktop/GenshinNerf/tmp/0004.jpg'
     # half_marker_size_x = default_marker_size / 2.0
     # half_marker_size_y = half_marker_size_x
     # for key, vec in qrs_id_pos_dict.items():
     #     qrs_id_pos_dict[key] = [vec[0] + half_marker_size_x, vec[1] - half_marker_size_y]
-    # c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.022, K=None)
+    show_res_img = True
+
+    # c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.022, K=None, K_mode="chessboard_mode")
 
     # this code is a example for single 6x6 qr detection:
     # the marker size is 2.8 cm, K (intrinsic mode is dynaimic_phone_K_yuanmu_1920)
-    filename = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap1_qr1/preprocessed/image/000.png'
-    show_res_img = False
-    c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.028, K=None, dict_type="6X6", require_debug=False, muti_qr_mode="single_mode", K_mode="sp_mode")
+    filename = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap_dynamic1/preprocessed/image/021.png'
+    c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.0285 / 5 * 7, K=None, dict_type="6X6", require_debug=False, muti_qr_mode="single_mode", K_mode="sp_mode")
 
-    print((c2w))
+    # print((c2w))

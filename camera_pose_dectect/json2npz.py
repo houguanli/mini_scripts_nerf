@@ -80,8 +80,8 @@ def npz_debug(npz_path):
         if key.startswith("world_mat") and not key.startswith("world_mat_inv"):
             print(f"mat Key: {key}")
             intrinsics, pose = load_K_Rt_from_P("none", data[key][:3, :4])
-            print(f"pose : {pose}")
-            print(f"intrinsics : {intrinsics}")
+            print(f"pose :\n {pose}")
+            print(f"intrinsics :\n {intrinsics}")
 
         else:
             print(f"Key: {key}")
@@ -93,6 +93,7 @@ def npz_debug(npz_path):
 if __name__ == '__main__':
     npz_path = "D:/gitwork/NeuS/public_data/bird/cameras_large.npz"
     npz_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap1_qr1/preprocessed/cameras_sphere.npz"
+    npz_path = "C:/Users/guanl/Desktop/GenshinNerf/t23/datasets1/soap_dynamic1/cameras_sphere.npz"
 
     npz_debug(npz_path)
     # convert(frame_count=9, camera_count=5)
