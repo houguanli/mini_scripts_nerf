@@ -1,14 +1,11 @@
 import os
-
-import torch.cuda
-
 import detect_k_from_EXIF
 import detect_single_w2c_from_qr
 import detect_c2w_from_3x3qrs
 import numpy as np
 import json
-arcuo_detect_type_dict = {'single_arcuo' : "single_arcuo", "multi_3x3": "multi_3x3", "multi_5x7":"multi_5x7"}
-detect_from_multi_arcuo = arcuo_detect_type_dict['multi_5x7']
+
+detect_from_multi_arcuo = True
 debug_mode = True
 
 
@@ -43,39 +40,32 @@ def rename_images_in_folder(folder_path):
     return counter
 
 
-def calc_json(file_dict, count_imgs, img_type=".jpg", with_default_mat='ptz_1920', arcuo_type=None):  # IMPORTANT:: c2w == M for Neus calculation
+def calc_json(file_dict, count_imgs, img_type=".jpg"):  # IMPORTANT:: c2w == M for Neus calculation
     dict = {}
     success_count = 0
-    if arcuo_type is None:
-        arcuo_type = detect_from_multi_arcuo
     for idx in range(0, count_imgs):
+
         filename = file_dict + "/" + f'{idx + 1:04d}' + img_type
         if debug_mode:
             print("run at " + filename)
-        K = detect_k_from_EXIF.get_k_from_exif(filename, with_default_mat=with_default_mat)
+        K = detect_k_from_EXIF.get_k_from_exif(filename)
         if K is None:
             print("ERR AT detect K for " + filename)
             continue
-        try:
-            if arcuo_type == 'multi_3x3':
-                c2w = detect_c2w_from_3x3qrs.detect_aruco_and_estimate_pose(filename, 0.031, K)
-            elif arcuo_type == 'single_arcuo':
-                c2w = detect_single_w2c_from_qr.detect_aruco_and_estimate_pose(filename, 0.028, K)
-            elif arcuo_type == 'multi_5x7':
-                c2w = detect_c2w_from_3x3qrs.detect_aruco_and_estimate_pose(filename, 0.0185, K)
-            else:
-                print("mode set failed! with mode: " + arcuo_type)
-                exit(-1)
-
-            if debug_mode:
-                print("K & M calc success!-----------------")
-                print(K)
-                print(c2w)
-                print("-----------------------------------------")
-        except:
+        if detect_from_multi_arcuo:
+            c2w = detect_c2w_from_3x3qrs.detect_aruco_and_estimate_pose(filename, 0.031, K)
+        else:
+            c2w = detect_single_w2c_from_qr.detect_aruco_and_estimate_pose(filename, 0.036, None)
+        if c2w is None:
             print("ERR AT detect M for " + filename)
             continue
-        success_count = success_count + 1
+        if debug_mode:
+            print("K & M calc success! /n-----------------")
+            print(K)
+            print(c2w)
+            print("-----------------------------------------")
+
+        success_count= success_count + 1
         w2c = np.linalg.inv(c2w)
         K_n = str(idx + 1) + "_1_K"
         M_n = str(idx + 1) + "_1_M"
@@ -85,15 +75,20 @@ def calc_json(file_dict, count_imgs, img_type=".jpg", with_default_mat='ptz_1920
         dict[M_inv_n] = w2c.tolist()
     if debug_mode:
         print("-----Calc success with " + str(success_count) + " imgs with all count=" + str(count_imgs) + "------")
-    cameras_path = file_dict + "/cameras_sphere.json"
+    cameras_path = file_dict + "/camera.json"
     with open(cameras_path, 'w') as json_file:
         json.dump(dict, json_file, indent=4)
 
 
 if __name__ == "__main__":
-    folder_path = 'C:/Users/guanl/Desktop/GenshinNerf/tmp'
+    folder_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t13/static/test'
+    folder_path = 'C:/Users/GUANL/Desktop/GenshinNerf/__tmp'
 
     # folder_path = 'D:/gitwork/NeuS/public_data/real_world_multi_qrs/mask'
 
     # count = rename_images_in_folder(folder_path)
-    calc_json(folder_path, count_imgs=3, img_type=".jpg", with_default_mat='phone', arcuo_type="multi_5x7")
+    count = 32
+    calc_json(folder_path, count)
+
+
+

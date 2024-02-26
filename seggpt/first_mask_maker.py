@@ -23,9 +23,9 @@ def make_init_mask(img_path, out_path):
     cv2.imwrite(out_path, highlighted_image)
 
 
-def refine_mask(img_path, convert_option=True, rgb_threshold=10):
+def refine_mask(img_path, convert_option=True):
     image = cv2.imread(img_path)
-    threshold_value = rgb_threshold
+    threshold_value = 66
     height, width, _ = image.shape
     refined_mask = image.copy()
     for y in range(height):
@@ -81,7 +81,7 @@ def refine_all_mask(directory, new_postfix=None):
         # 获取图片当前的完整路径和新的完整路径
         old_path = os.path.join(directory, image)
         new_path = os.path.join(directory, new_name)
-        refine_mask(old_path, convert_option=False, rgb_threshold=10)
+        refine_mask(old_path, convert_option=False)
         # 重命名图片
 
 
@@ -134,12 +134,12 @@ def combine_images_dir(imgs_dir, masks_dir):
         raise ValueError("图片数量超过1000张!")
     # 对图片进行排序，这样我们在重命名时不会遗漏任何图片
     images.sort()
-    for idx, image in enumerate(images, 0):
+    for idx, image in enumerate(images, 1):
         # 获取文件扩展名
         ext = os.path.splitext(image)[1]
         # ext = ".png"
         # 新名称格式：0001, 0002, ...
-        img_name = f"/{idx:03}{ext}"
+        img_name = f"/{idx:04}{ext}"
         image_path = imgs_dir + img_name
         mask_path = masks_dir + img_name
         print(image_path)
@@ -156,12 +156,10 @@ if __name__ == '__main__':
     output_path = "D:/gitwork/NeuS/public_data/soccer_wb/image"
     # output_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/image"
     # output_path = "C:/Users/guanl/Desktop/GenshinNerf/reflect_bunny_torch_base/motion/bunny_only/render_results_cmp"
-    output_path = "/Users/houguanli/Desktop/virtual_data/static/rabbit/mask"
-    output_path = '/Users/houguanli/Desktop/tree_circle/image'
+    # output_path = "C:/Users/guanl/Desktop/GenshinNerf/slip_duck_torch/duck_original/mask"
 
-
-    # new_width = 4624  # 新的宽度
-    # new_height = 3472  # 新的高度
+    new_width = 4624  # 新的宽度
+    new_height = 3472  # 新的高度
     # resize_image(input_path, output_path, new_width, new_height)
     # refine_all_mask(output_path, new_postfix='.png')
     # exit()
@@ -170,6 +168,6 @@ if __name__ == '__main__':
     # image = "D:/gitwork/neus_original/exp/bunny2/wmask/test.png"
     # mask = "D:/gitwork/neus_original/exp/bunny2/wmask/0001.png"
     # combine_images(image, mask)
-    out_mask_path = "//Users/houguanli/Desktop/tree_circle/mask"
+    out_mask_path = "D:/gitwork/NeuS/public_data/soccer_wb/mask"
     combine_images_dir(output_path, out_mask_path)
 

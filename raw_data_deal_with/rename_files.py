@@ -90,6 +90,7 @@ def apply_gal_dir(image_dir):
         gal_img = apply_gaussian_and_laplacian(old_path)
         cv2.imwrite(old_path, gal_img)  # overwrite the original image
 
+    directory_path = 'C:/Users/GUANLI.HOU/Desktop/preprocessed/mask'  # 替换为你的文件夹路径
 
 if __name__ == "__main__":
     # output_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/hex_s/mask"

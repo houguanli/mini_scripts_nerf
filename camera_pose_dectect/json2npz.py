@@ -77,7 +77,6 @@ def convert(output_npz_path, json_file_path, frame_count=1, camera_count=1):
 
 def npz_debug(npz_path):
     data = np.load(npz_path)
-    print(data)
     for key in data.files:
         # print(f"mat Key: {key}")
         # print(data[key])
@@ -98,7 +97,7 @@ def npz_debug(npz_path):
 if __name__ == '__main__':
     npz_path = "D:/gitwork/NeuS/public_data/bird/cameras_large.npz"
     npz_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap1_qr1/preprocessed/cameras_sphere.npz"
-    npz_path = "C:/Users/guanl/Desktop/GenshinNerf/t23/datasets1/soap_dynamic1/cameras_sphere.npz"
+    npz_path = "C:/Users/guanli.hou/Desktop/tree_circle/cameras_sphere.npz"
     npz_path = "/Users/houguanli/Desktop/virtual_data/static/crack/cameras_sphere.npz"
     npz_path_test = "/Users/houguanli/Desktop/real_world/dynamic/raw/cameras_sphere.npz"
 
