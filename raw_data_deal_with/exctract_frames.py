@@ -9,9 +9,8 @@ def extract_frames_and_calib(video_path, jump_frames=1):
     if not cap.isOpened():
         print("Error: Cannot open video.")
         return
-
     # 创建一个文件夹来保存帧
-    dir_name = os.path.splitext(video_path)[0] + "/raw"
+    dir_name = os.path.splitext(video_path)[0] + "/raw_jump"
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
 
@@ -33,7 +32,7 @@ def extract_frames_and_calib(video_path, jump_frames=1):
             break
 
         if frame_count % jump_frames == 0:
-            frame_name = os.path.join(dir_name, f"{save_count:03}.png")
+            frame_name = os.path.join(dir_name, f"{save_count:06}.png")
             cv2.imwrite(frame_name, frame)
             save_count += 1
 
@@ -49,7 +48,8 @@ def extract_frames_and_calib(video_path, jump_frames=1):
 if __name__ == "__main__":
 
     video_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/soap/qr1.mp4"
-    extract_frames_and_calib(video_path, jump_frames=10)
+    video_path = "/Users/houguanli/Desktop/real_world/tree/dynamic/raw/tree_slop.mp4"
+    extract_frames_and_calib(video_path, jump_frames=30)
 
 
 

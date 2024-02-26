@@ -67,10 +67,18 @@ def remove_outliers(rvecs, tvecs, threshold=10.0):
 
     return rvecs, tvecs
 
+def tst():
+    vx_count = [10, 50, 58, 25, 158, 45, 25, -25, 30, 15, 5, -60, -20, -48, -30, 30, 14]
+    zfb_count = [30, 68, 328, 328, 120, 20, 60, 160, 37]
+    vx_count, zfb_count = np.array(vx_count), np.array(zfb_count)
+    print(np.sum(vx_count))
+    print(np.sum(zfb_count))
 
 # 示例数据
 
 if __name__ == '__main__':
+    tst()
+    exit()
     filename = 'C:/Users/GUANL/Desktop/GenshinNerf/t10/0001.jpg'
 
     detect_qr(filename)

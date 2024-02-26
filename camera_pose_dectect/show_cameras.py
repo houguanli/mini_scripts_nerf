@@ -78,7 +78,7 @@ def read_cameras_from_json(cameras_path, frames=4):
     data_dict = {key: data[key] for key in data.keys()}
     Ks, Ts_inv = [], []
     for idx in range(0, frames):
-        template_name = str(idx + 1) + "_1"
+        template_name = str(idx)
         K_name = template_name + "_K"
         T_name = template_name + "_M"
         k = np.array(data_dict[K_name])
@@ -194,8 +194,9 @@ if __name__ == '__main__':
     # cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/t21/compress/cameras_sphere.json'
     # cameras_path = 'C:/Users/GUANL/Desktop/GenshinNerf/dp_simulation/bunny_drop/0000/cameras_blender.json'
     cameras_path = 'D:/gitwork/neus_original/public_data/bunny2/cameras_sphere.json'
+    cameras_path = '/Users/houguanli/Desktop/virtual_data/static/crack/cameras_blender.json'
 
-    npz_path = "D:/gitwork/NeuS/public_data/bird/cameras_large.npz"
+    npz_path = "D:/gitwork/NeuS/public_data/dessert/cameras_large.npz"
     # cameras_path = 'C:/Users/guanl/Desktop/face_video/front/sparse/1/cameras_sphere.json'
     # reformat_blender_mat(cameras_path, frames=60)
     # new_K = [[393.1742062283737, 0, 246.57381480968857], [0, 392.47815705069127, 185.1793146543779], [0, 0, 1]]
@@ -207,7 +208,7 @@ if __name__ == '__main__':
     Ks, Ts_inv = read_cameras_from_json(cameras_path, frames=60)
     # import pdbDDD
     # pdb.set_trace()
-    cameras = ct.camera.create_camera_ray_frames(Ks, Ts_inv)
+    cameras = ct.camera.create_camera_frames(Ks, Ts_inv)
     # model1 = o3d.io.read_triangle_mesh("C:/Users/GUANL/Desktop/GenshinNerf/t12/models/t_0_000001.obj")
     # axis = o3d.geometry.TriangleMesh.create_coordinate_frame(origin=[1, 0, 1])
     axis = o3d.geometry.TriangleMesh.create_coordinate_frame(origin=[0, 0, 0])

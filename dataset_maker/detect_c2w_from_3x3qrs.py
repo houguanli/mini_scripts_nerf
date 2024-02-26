@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # red axis refers to X and green refers to Y
-debug_mode = True
+debug_mode = False
 show_res_img = False
 mode_dict = {'EXIF_mode': 'EXIF_mode', 'chessboard_mode': 'chessboard_mode',
              'dynamic_camera_mode': 'dynamic_camera_mode', 'sp_mode': 'sp_mode'}
@@ -30,7 +30,9 @@ dynamic_camera_K_2700 = [[1.20204328e+03, 0.00000000e+00, 1.36849027e+03],
 dynaimic_phone_K_yuanmu_1920 = [[1.52617212e+03, 7.74540422e-06, 9.46001160e+02],
                                 [0.00000000e+00, 1.59729663e+03, 7.31382629e+02],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
-
+dynaimic_phone_K_yuanmu_2320 =  [[4.34950439e+03, 4.80758608e-05, 1.19272156e+03],
+                                 [0.00000000e+00, 4.40551123e+03, 5.40642639e+02],
+                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
 cmp_diff_pixel = 1.525774468624755  # if this is less than 1, it will be a good assm
 cmp_diff_dynamic_camera_pixel_2700 = 0.9102474884918834
 cmp_diff_dynamic_camera_pixel = 0.8204705806151762
@@ -112,7 +114,7 @@ def get_paras_fromapi(K=None, dict_type="5X5", K_mode = mode_dict['EXIF_mode']):
             K = dynamic_camera_K
             dist_coeffs = dynamic_camera_chessboard_coeffs
         elif K_mode == mode_dict['sp_mode']:
-            K = dynaimic_phone_K_yuanmu_1920
+            K = dynaimic_phone_K_yuanmu_2320
             dist_coeffs = idol_coeffs
         else:
             print("no such mode! please make sure about it!")
@@ -363,13 +365,16 @@ if __name__ == '__main__':
     # half_marker_size_y = half_marker_size_x
     # for key, vec in qrs_id_pos_dict.items():
     #     qrs_id_pos_dict[key] = [vec[0] + half_marker_size_x, vec[1] - half_marker_size_y]
-    show_res_img = True
+    show_res_img = False
 
     # c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.022, K=None, K_mode="chessboard_mode")
 
     # this code is a example for single 6x6 qr detection:
     # the marker size is 2.8 cm, K (intrinsic mode is dynaimic_phone_K_yuanmu_1920)
     filename = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap_dynamic1/preprocessed/image/021.png'
-    c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.0285 / 5 * 7, K=None, dict_type="6X6", require_debug=False, muti_qr_mode="single_mode", K_mode="sp_mode")
+    filename = '/Users/houguanli/Desktop/real_world/dynamic/raw/006027.png'
+    # filename = '/Users/houguanli/Desktop/real_world/object/tree/qr.jpg'
 
-    # print((c2w))
+    c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.03 / 5 * 7, K=None, dict_type="6X6", require_debug=False, muti_qr_mode="single_mode", K_mode="sp_mode")
+
+    print((c2w))

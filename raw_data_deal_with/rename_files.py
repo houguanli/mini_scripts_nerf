@@ -16,7 +16,7 @@ def rename_images(directory, new_ext=None, start_idx=1):
         raise ValueError("图片数量超过1000张!")
 
     # 对图片进行排序，这样我们在重命名时不会遗漏任何图片
-    # images.sort()
+    images.sort()
 
     # 开始重命名
     for idx, image in enumerate(images, start_idx):
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     # 替换为你的文件夹路径
     directory_path = 'D:/gitwork/NeuS/public_data/soccer_gal/image'  # 替换为你的文件夹路径
     directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap_clash/move2'  # 替换为你的文件夹路径
+    directory_path = '/Users/houguanli/Desktop/tree_circle/mask'
 
-
-    rename_images(directory_path, start_idx=0)
+    rename_images(directory_path, start_idx=0, new_ext=".png")
 
