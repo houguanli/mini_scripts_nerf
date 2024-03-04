@@ -2,7 +2,7 @@ from PIL import Image
 import imageio
 import os
 
-def create_dynamic_video(image_folder, frame_count, frame_duration=0.02, output_format="gif"):
+def create_dynamic_video(image_folder, frame_count, frame_duration=0.02, output_format="gif", start_pre_fix=0):
     """
     创建动态视频（GIF或MP4）。
 
@@ -18,8 +18,8 @@ def create_dynamic_video(image_folder, frame_count, frame_duration=0.02, output_
     images = []
 
     # 读取图像并添加到图像列表
-    for i in range(1, frame_count + 1):
-        image_file = f"{i:04}.png"  # 假设图像格式为PNG
+    for i in range(start_pre_fix, frame_count + start_pre_fix):
+        image_file = f"{i:03}.png"  # 假设图像格式为PNG
         image_path = os.path.join(image_folder, image_file)
         img = Image.open(image_path)
         images.append(img)
@@ -27,7 +27,7 @@ def create_dynamic_video(image_folder, frame_count, frame_duration=0.02, output_
 
     # 生成输出文件路径
     if output_format == "gif":
-        output_file = os.path.join(image_folder, "1.gif")
+        output_file = os.path.join(image_folder, "result.gif")
     elif output_format == "mp4":
         output_file = os.path.join(image_folder, "1.mp4")
     else:
@@ -42,6 +42,6 @@ def create_dynamic_video(image_folder, frame_count, frame_duration=0.02, output_
 
 if __name__ == '__main__':
     # 例如，生成一个包含 30 帧的动态 GIF 图像
-    output_path = "C:/Users/guanl/Desktop/GenshinNerf/reflect_bunny_torch_base/motion/bunny_only/render_results_cmp"
+    output_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/public_data/yoyo_slide/image_cp"
 
-    create_dynamic_video(output_path, frame_count=19, frame_duration=0.02)
+    create_dynamic_video(output_path, frame_count=50, frame_duration=0.01667, start_pre_fix=0)

@@ -10,11 +10,11 @@ def extract_frames_and_calib(video_path, jump_frames=1):
         print("Error: Cannot open video.")
         return
     # 创建一个文件夹来保存帧
-    dir_name = os.path.splitext(video_path)[0] + "/raw_jump"
+    dir_name = os.path.splitext(video_path)[0] + "/raw_jump" + str(jump_frames)
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
 
-    # 假设内参矩阵 (只作为示例，你应该使用你的摄像头的真实内参)
+    # 假设内参矩阵 (只作为示例，你应该使用你的摄像头的真实内
     fx, fy = 1680, 1080
     cx, cy = cap.get(cv2.CAP_PROP_FRAME_WIDTH) // 2, cap.get(cv2.CAP_PROP_FRAME_HEIGHT) // 2
     intrinsic_matrix = {
@@ -48,9 +48,8 @@ def extract_frames_and_calib(video_path, jump_frames=1):
 if __name__ == "__main__":
 
     video_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/soap/qr1.mp4"
-    video_path = "/Users/houguanli/Desktop/real_world/tree/dynamic/raw/tree_slop.mp4"
-    extract_frames_and_calib(video_path, jump_frames=30)
-
+    video_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/raw/tree_joyo/tree_joyo.mp4"
+    extract_frames_and_calib(video_path, jump_frames=1)
 
 
 # C:/Users/GUANLI.HOU/Desktop/GenshinNerf/t1.mp4

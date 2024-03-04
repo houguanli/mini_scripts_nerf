@@ -4,8 +4,8 @@ import numpy as np
 # red axis refers to X and green refers to Y
 debug_mode = False
 show_res_img = False
-mode_dict = {'EXIF_mode': 'EXIF_mode', 'chessboard_mode': 'chessboard_mode',
-             'dynamic_camera_mode': 'dynamic_camera_mode', 'sp_mode': 'sp_mode'}
+mode_dict = {'EXIF_mode': 'EXIF_mode', 'chessboard_mode': 'chessboard_mode', 'yuanmu_2320_mode': 'yuanmu_2320_mode',
+             'dynamic_camera_mode': 'dynamic_camera_mode', 'yuanmu_1920_modes': 'yuanmu_1920_modes', 'yuanmu_1920_moded': 'yuanmu_1920_moded'}
 ar_set_modes = ["wood_mode", "a4_mode"]
 # K_mode = 'dynamic_camera_mode'
 qr_move_vector = []
@@ -27,9 +27,21 @@ dynamic_camera_K = [[735.15009953, 0., 961.93174061],
 dynamic_camera_K_2700 = [[1.20204328e+03, 0.00000000e+00, 1.36849027e+03],
                          [0.00000000e+00, 1.19620501e+03, 7.01540732e+02],
                          [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
-dynaimic_phone_K_yuanmu_1920 = [[1.52617212e+03, 7.74540422e-06, 9.46001160e+02],
-                                [0.00000000e+00, 1.59729663e+03, 7.31382629e+02],
-                                [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
+static_phone_K_yuanmu_1920 =  \
+    [[1.43084900e+03, -3.29807117e-05,  9.57443726e+02],
+ [ 0.00000000e+00,  1.45261902e+03,  5.39865356e+02],
+ [ 0.00000000e+00,  0.00000000e+00,  1.00000000e+00]]
+
+dynaimic_phone_K_yuanmu_1920 = \
+[[3.27436621e+03,  4.26224760e-05,  9.48091187e+02],
+ [ 0.00000000e+00, 3.27436621e+03,  2.97527985e+02],
+ [ 0.00000000e+00,  0.00000000e+00,  1.00000000e+00]]
+
+dynaimic_phone_K_yuanmu_1920_tree = \
+[[3.27436621e+03,  4.26224760e-05,  9.48091187e+02],
+ [ 0.00000000e+00, 3.27436621e+03,  2.97527985e+02],
+ [ 0.00000000e+00,  0.00000000e+00,  1.00000000e+00]]
+
 dynaimic_phone_K_yuanmu_2320 =  [[4.34950439e+03, 4.80758608e-05, 1.19272156e+03],
                                  [0.00000000e+00, 4.40551123e+03, 5.40642639e+02],
                                  [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
@@ -113,8 +125,14 @@ def get_paras_fromapi(K=None, dict_type="5X5", K_mode = mode_dict['EXIF_mode']):
         elif K_mode == mode_dict['dynamic_camera_mode']:
             K = dynamic_camera_K
             dist_coeffs = dynamic_camera_chessboard_coeffs
-        elif K_mode == mode_dict['sp_mode']:
+        elif K_mode == mode_dict['yuanmu_2320_mode']:
             K = dynaimic_phone_K_yuanmu_2320
+            dist_coeffs = idol_coeffs
+        elif K_mode == mode_dict['yuanmu_1920_modes']:
+            K = static_phone_K_yuanmu_1920
+            dist_coeffs = idol_coeffs
+        elif K_mode == mode_dict['yuanmu_1920_moded']:
+            K = dynaimic_phone_K_yuanmu_1920
             dist_coeffs = idol_coeffs
         else:
             print("no such mode! please make sure about it!")
@@ -322,6 +340,7 @@ def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug=Fal
     if ids is not None:
         if show_res_img:
             cv2.aruco.drawDetectedMarkers(image, corners, ids)
+
         for i, corner__ in enumerate(corners):
             # Draw detected markers
             id__ = int(ids[i][0])  # actually rvec equals rvec_ as all arcuo codes lie in the XOY plane
@@ -351,6 +370,8 @@ def detect_aruco_and_estimate_pose(image_path, marker_size, K, require_debug=Fal
                 cv2.imshow("Aruco Detection", image)
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
+            if muti_qr_mode == "single_mode":
+                break # only process this mode for once
         w2c_mat, c2w_mat = calc_extrinsic_mat_from__avg_vecs(rvecs, tvecs_, muti_qr_mode=muti_qr_mode)
 
     else:
@@ -365,16 +386,16 @@ if __name__ == '__main__':
     # half_marker_size_y = half_marker_size_x
     # for key, vec in qrs_id_pos_dict.items():
     #     qrs_id_pos_dict[key] = [vec[0] + half_marker_size_x, vec[1] - half_marker_size_y]
-    show_res_img = False
-
+    show_res_img = True
+    debug_mode = True
     # c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.022, K=None, K_mode="chessboard_mode")
 
     # this code is a example for single 6x6 qr detection:
     # the marker size is 2.8 cm, K (intrinsic mode is dynaimic_phone_K_yuanmu_1920)
     filename = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap_dynamic1/preprocessed/image/021.png'
-    filename = '/Users/houguanli/Desktop/real_world/dynamic/raw/006027.png'
+    filename = 'C:/Users/guanli.hou/Desktop/real_world/dynamic/public_data/tree_joyo/qr1.png'
     # filename = '/Users/houguanli/Desktop/real_world/object/tree/qr.jpg'
 
-    c2w = detect_aruco_and_estimate_pose(filename, marker_size=0.03 / 5 * 7, K=None, dict_type="6X6", require_debug=False, muti_qr_mode="single_mode", K_mode="sp_mode")
+    c2w = detect_aruco_and_estimate_pose(filename, marker_size= 0.03, K=None, dict_type="6X6", require_debug=False, muti_qr_mode="single_mode", K_mode="yuanmu_1920_moded")
 
     print((c2w))

@@ -99,9 +99,9 @@ if __name__ == '__main__':
     npz_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap1_qr1/preprocessed/cameras_sphere.npz"
     npz_path = "C:/Users/guanli.hou/Desktop/tree_circle/cameras_sphere.npz"
     npz_path = "/Users/houguanli/Desktop/virtual_data/static/crack/cameras_sphere.npz"
-    npz_path_test = "/Users/houguanli/Desktop/real_world/dynamic/raw/cameras_sphere.npz"
+    npz_path_test = "C:/Users/guanli.hou/Desktop/real_world/dynamic/public_data/tree_joyo/cameras_sphere.npz"
 
-    json_path = "/Users/houguanli/Desktop/virtual_data/static/dessert/cameras_blender.json"
+    json_path = "C:/Users/GUANLI.HOU/Desktop/virtual_data/static/dessert/cameras_blender.json"
     npz_debug(npz_path_test)
     exit()
     convert(output_npz_path=npz_path_test, json_file_path=json_path, frame_count=60, camera_count=1)

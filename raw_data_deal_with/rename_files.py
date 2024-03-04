@@ -90,7 +90,6 @@ def apply_gal_dir(image_dir):
         gal_img = apply_gaussian_and_laplacian(old_path)
         cv2.imwrite(old_path, gal_img)  # overwrite the original image
 
-    directory_path = 'C:/Users/GUANLI.HOU/Desktop/preprocessed/mask'  # 替换为你的文件夹路径
 
 if __name__ == "__main__":
     # output_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/hex_s/mask"
@@ -98,6 +97,7 @@ if __name__ == "__main__":
     directory_path = 'D:/gitwork/NeuS/public_data/soccer_gal/image'  # 替换为你的文件夹路径
     directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap_clash/move2'  # 替换为你的文件夹路径
     directory_path = '/Users/houguanli/Desktop/tree_circle/mask'
+    directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/public_data/tree_joyo/image'  # 替换为你的文件夹路径
 
     rename_images(directory_path, start_idx=0, new_ext=".png")
 
