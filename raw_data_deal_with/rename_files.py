@@ -97,7 +97,7 @@ if __name__ == "__main__":
     directory_path = 'D:/gitwork/NeuS/public_data/soccer_gal/image'  # 替换为你的文件夹路径
     directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap_clash/move2'  # 替换为你的文件夹路径
     directory_path = '/Users/houguanli/Desktop/tree_circle/mask'
-    directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/public_data/tree_joyo/image'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/guanli.hou/Desktop/real_world/dynamic/exp/soap_geo/mask_gt'  # 替换为你的文件夹路径
 
     rename_images(directory_path, start_idx=0, new_ext=".png")
 

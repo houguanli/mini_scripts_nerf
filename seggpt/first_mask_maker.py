@@ -125,7 +125,19 @@ def combine_images(image1_path, image2_path):
     image1 = np.where(image2 > 0, image1, 0)
     cv2.imwrite(image1_path, image1)
 
-def combine_images_dir(imgs_dir, masks_dir):
+def replace_image(image1_path, image2_path):
+    # 打开第一张图片
+    image1 = cv2.imread(image1_path)
+
+    # 打开第二张图片并转为二值图像
+    image2 = cv2.imread(image2_path)
+    image2_cp = image2
+    # image2[image2 > 0.1] = 1
+    image1 = np.where(image2 > 0, image2_cp, image1)
+    cv2.imwrite(image1_path, image1)
+
+
+def combine_images_dir(imgs_dir, masks_dir, start_idx=0):
     files = os.listdir(imgs_dir)
 
     # 过滤出.png和.jpg格式的图片
@@ -134,16 +146,18 @@ def combine_images_dir(imgs_dir, masks_dir):
         raise ValueError("图片数量超过1000张!")
     # 对图片进行排序，这样我们在重命名时不会遗漏任何图片
     images.sort()
-    for idx, image in enumerate(images, 0):
+    for idx, image in enumerate(images, start_idx):
         # 获取文件扩展名
         ext = os.path.splitext(image)[1]
         # ext = ".png"
         # 新名称格式：0001, 0002, ...
-        img_name = f"/{idx:03}{ext}"
-        image_path = imgs_dir + img_name
+        img_name = f"/149_{idx}{ext}"
+        img_name2 = f"/{idx:03}{ext}"
+
+        image_path = imgs_dir + img_name2
         mask_path = masks_dir + img_name
         print(image_path)
-        combine_images(image_path, mask_path)
+        replace_image(image_path, mask_path)
 
 
 
@@ -156,7 +170,7 @@ if __name__ == '__main__':
     output_path = "D:/gitwork/NeuS/public_data/soccer_wb/image"
     output_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/image"
     output_path = "C:/Users/guanl/Desktop/GenshinNerf/reflect_bunny_torch_base/motion/bunny_only/render_results_cmp"
-    output_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/public_data/yoyo_slide/image_cp"
+    output_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/yoyo_slide/gt_cp"
 
     new_width = 4624  # 新的宽度
     new_height = 3472  # 新的高度
@@ -168,6 +182,6 @@ if __name__ == '__main__':
     # image = "D:/gitwork/neus_original/exp/bunny2/wmask/test.png"
     # mask = "D:/gitwork/neus_original/exp/bunny2/wmask/0001.png"
     # combine_images(image, mask)
-    out_mask_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/public_data/yoyo_slide/mask"
-    combine_images_dir(output_path, out_mask_path)
+    out_mask_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/yoyo_slide/result_sub"
+    combine_images_dir(output_path, out_mask_path, start_idx=0)
 
