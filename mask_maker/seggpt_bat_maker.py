@@ -3,15 +3,15 @@ import numpy as np
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-from seggpt.first_mask_maker import refine_mask, make_init_mask
+from mask_maker.first_mask_maker import refine_mask, make_init_mask
 
 
-# original cmd_line in seggpt, output_dir should contain mask 1_1 as default start, use make_init_mask() to generate one
+# original cmd_line in mask_maker, output_dir should contain mask 1_1 as default start, use make_init_mask() to generate one
 # python seggpt_inference.py --input_image examples/hmbb_2.jpg --prompt_image examples/hmbb_1.jpg
 # --prompt_target examples/hmbb_1_target.png --output_dir ./
 def make_seggpt_bat(input_dir, output_dir, save_bat_path, frame_count=1, camera_count=1, image_type="png"):
     base_cmd = "python seggpt_inference.py "
-    all_cmd_to_write = "cd D:/gitwork/seggpt/SegGPT/SegGPT_inference\nD:\nconda activate seggpt\n"  # switch to base dir
+    all_cmd_to_write = "cd D:/gitwork/mask_maker/SegGPT/SegGPT_inference\nD:\nconda activate mask_maker\n"  # switch to base dir
     for frame_id in range(1, frame_count + 1):
         for camera_id in range(1, camera_count + 1):
             if frame_id == 1 and camera_id == 1:
@@ -43,7 +43,7 @@ def make_seggpt_bat(input_dir, output_dir, save_bat_path, frame_count=1, camera_
 
 def one_camera_seggpt__bat_maker(input_dir, output_dir, save_bat_path, frame_count=1, image_type="jpg"):
     base_cmd = "python seggpt_inference.py "
-    all_cmd_to_write = "cd D:/gitwork/seggpt/SegGPT/SegGPT_inference\nD:\nconda activate seggpt\n"  # switch to base dir
+    all_cmd_to_write = "cd D:/gitwork/mask_maker/SegGPT/SegGPT_inference\nD:\nconda activate mask_maker\n"  # switch to base dir
     for frame_id in range(1, frame_count + 1):
         if frame_id == 1:
             continue  # 1_1 has its mask in target file
@@ -68,7 +68,7 @@ def one_camera_seggpt__bat_maker(input_dir, output_dir, save_bat_path, frame_cou
 
 def one_camera_seggpt_bat_maker_multi_init_mask(input_dir, output_dir, save_bat_path, frame_count=1, image_type="jpg"):
     base_cmd = "python seggpt_inference.py "
-    all_cmd_to_write = "cd D:/gitwork/seggpt/SegGPT/SegGPT_inference\nD:\n"  # switch to base dir
+    all_cmd_to_write = "cd D:/gitwork/mask_maker/SegGPT/SegGPT_inference\nD:\n"  # switch to base dir
     for frame_id in range(0, frame_count):
         if frame_id == 0 or frame_id == 1:
             continue  # 1_1 has its mask in target file
@@ -94,7 +94,7 @@ def one_camera_seggpt_bat_maker_multi_init_mask(input_dir, output_dir, save_bat_
 
 def one_camera_seggpt_multi_init_static_sense_bat_maker(input_dir, output_dir, save_bat_path, frame_count=1, image_type="jpg"):
     base_cmd = "python seggpt_inference.py "
-    all_cmd_to_write = "cd D:/gitwork/seggpt/SegGPT/SegGPT_inference\nD:\n"  # switch to base dir
+    all_cmd_to_write = "cd D:/gitwork/mask_maker/SegGPT/SegGPT_inference\nD:\n"  # switch to base dir
     for frame_id in range(1, frame_count + 1):
         if frame_id == 1 or frame_id == 35:
             continue  # 1_1 has its mask in target file

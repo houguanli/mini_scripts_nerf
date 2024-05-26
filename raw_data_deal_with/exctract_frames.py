@@ -32,7 +32,7 @@ def extract_frames_and_calib(video_path, jump_frames=1):
             break
 
         if frame_count % jump_frames == 0:
-            frame_name = os.path.join(dir_name, f"{save_count:06}.png")
+            frame_name = os.path.join(dir_name, f"{save_count:03}.png")
             cv2.imwrite(frame_name, frame)
             save_count += 1
 
@@ -47,8 +47,8 @@ def extract_frames_and_calib(video_path, jump_frames=1):
 
 if __name__ == "__main__":
 
-    video_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/soap/qr1.mp4"
-    video_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/raw/tree_joyo/tree_joyo.mp4"
+    video_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/raw/dragon_slip/dragon_slip.mp4"
+    # video_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/raw/tree_joyo/tree_joyo.mp4"
     extract_frames_and_calib(video_path, jump_frames=1)
 
 
