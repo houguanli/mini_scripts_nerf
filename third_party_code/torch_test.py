@@ -1,3 +1,5 @@
+import json
+
 import torch
 import numpy as np
 import trimesh
@@ -174,17 +176,59 @@ class RigidBodySimulator(torch.nn.Module):
 
         return self.translation[f + 1], self.quaternion[f + 1]
 
+    def run(self):
+        data= {}
+        data["frames"] = self.frames
+        data["1_1_M"] = [[1.0, 0.0, 0.0,0.0],
+                         [0.0, 1.0, 0.0, 0.0],
+                         [0.0, 0.0, 1.0, -3.0],
+                         [0.0, 0.0, 0.0, 1.0]]
+        data['dt'] = self.dt
+        data['substep'] = self.substep
+        data["results"] = []
+        while self.window.running:
+            if self.window.is_pressed(ti.ui.LEFT, 'b'):
+                self.pause = not self.pause
+            if not self.pause:
+                for i in range(self.substep):
+                    self.clear()
+                    self.step(self.current_frame)
+                new_frame = {}
+                new_frame["frame_id"] = self.current_frame
+                new_frame["translation"] = self.translation[0].to_numpy().tolist()
+                new_frame["rotation"] = self.quad[0].to_numpy().tolist()
+                data["results"].append(new_frame)
+                self.current_frame += 1
+                # output mesh result
+                self.get_mesh_now()
+                # import pdb
+                # pdb.set_trace()
+
+                mesh_vertices = self.x_t.to_numpy()
+                mesh_vertices = mesh_vertices.tolist()
+                mesh_faces = self.mesh.faces.tolist()
+                mesh = trimesh.Trimesh(vertices=mesh_vertices, faces=mesh_faces)
+                if self.current_frame <= data['frames']:
+                    mesh.export('mesh_result/{:04d}.obj'.format(self.current_frame))
+                else:
+                    exit(0)
+            # print('x shape', self.x.shape)
+            self.get_transform_matrix()
+            self.render()
+        with open('transform.json', 'w') as f:
+            json.dump(data, f, indent=4)
 
 if __name__ == '__main__':
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    file_name = Path(current_directory) / 'assets' / 'donut.obj'
+    file_name = Path(current_directory) / 'mesh' / 'bunny.obj'
     options = {
         'substep': 10,
         'frames': 30,
-        'kn': 0.5,
-        'mu': 0.5,
+        'kn': 0.92,
+        'mu': 0.1,
         'linear_damping': 0.999,
         'angular_damping': 0.999,
         'mesh': file_name,
     }
     rigid = RigidBodySimulator(options=options)
+    rigid.run()

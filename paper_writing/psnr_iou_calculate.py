@@ -117,15 +117,15 @@ def calculate_iou_dir(ground_truth_folder, prediction_folder,img_count=21,ext=".
 
 
 if __name__ == "__main__":
-    image_count = 24
-    folder_gt =   'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/IoU_calc/gt'
-    folder_cmp =  'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/IoU_calc/ga'
-    folder_mask = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/IoU_calc/white_bk'
-    # folder_gt = 'C:/Users/guanli.hou/Desktop/real_world/dynamic/exp/bunny_bounce/gt'
-    # # folder_cmp = 'C:/Users/guanli.hou/Desktop/real_world/dynamic/exp/bunny_bounce/iter_0'
-    # folder_cmp = 'C:/Users/guanli.hou/Desktop/real_world/dynamic/exp/bunny_bounce/init'
+    image_count = 35
+    # folder_gt =   'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_b/sp_calc/gt'
+    # folder_cmp =  'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/dragon_slip_short/sp_calc/ga_sp'
+    # folder_mask = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/dragon_slip_short/sp_calc/white_sp'
+    folder_gt =   'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/gt_wb'
+    folder_cmp =  'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/pga_wb'
+    folder_mask = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/white_bk'
 
-    iou_values = calculate_iou_dir(ground_truth_folder=folder_mask, prediction_folder=folder_cmp, img_count=image_count, start_idx=0)
+    # iou_values = calculate_iou_dir(ground_truth_folder=folder_mask, prediction_folder=folder_cmp, img_count=image_count, start_idx=0)
 
     psnr_values = compare_images_psnr_dir_new(folder_gt=folder_gt, folder_cmp=folder_cmp,folder_mask=folder_mask, img_count=image_count, start_idx=0)
 
@@ -137,3 +137,11 @@ if __name__ == "__main__":
 
     exit()
     psnr_values = calculate_iou_dir(folder_gt, folder_cmp, img_count=19)
+
+"""
+[[1, -1, 0,  2],
+ [3, -1, -1, 7],
+ [1, -2, -1, 0],
+ [4, 4, 2, 18]]
+ [7, 26, -6, 90]
+"""

@@ -214,7 +214,7 @@ if __name__ == '__main__':
     cameras_path = 'C:/Users/GUANLI.HOU/Desktop/virtual_data/static/crack/cameras_sphere.json'
 
     npz_path = "C:/Users/GUANLI.HOU/Desktop/real_world/static/public_data/bunny_original/cameras_sphere.npz"
-    # npz_path = "C:/Users/GUANLI.HOU/Desktop/real_world/static/public_data/tree/cameras_sphere.npz"
+    npz_path = "C:/Users/GUANLI.HOU/Desktop/neural_rig/bunny/1024_liedown/cameras_sphere.npz"
 
     # cameras_path = 'C:/Users/guanl/Desktop/face_video/front/sparse/1/cameras_sphere.json'
     # reformat_blender_mat(cameras_path, frames=60)
@@ -225,7 +225,7 @@ if __name__ == '__main__':
     # npz_dict = load_npz_to_dict(npz_path)
     # Ks, Ts_inv = read_cameras_from_json(cameras_path, frames=30, with_prefix_camera=False)
 
-    Ks, Ts_inv = read_cameras_npz(npz_path, frames=60)
+    Ks, Ts_inv = read_cameras_npz(npz_path, frames=20)
     # import pdbDDD
     # pdb.set_trace()
     cameras = ct.camera.create_camera_ray_frames(Ks, Ts_inv)

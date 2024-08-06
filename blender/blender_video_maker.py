@@ -42,6 +42,6 @@ def create_dynamic_video(image_folder, frame_count, frame_duration=0.02, output_
 
 if __name__ == '__main__':
     # 例如，生成一个包含 30 帧的动态 GIF 图像
-    output_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/yoyo_slide/fake_refine_RT_sequence"
+    output_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/pga_wb"
 
-    create_dynamic_video(output_path, frame_count=21, frame_duration=0.05, start_pre_fix=0)
+    create_dynamic_video(output_path, frame_count=35, frame_duration=0.08, start_pre_fix=0)

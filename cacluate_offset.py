@@ -98,15 +98,15 @@ def create_custom_image(width, height, y_threshold):
 
     return image
 if __name__ == "__main__":
-    white = create_custom_image(800, 600, y_threshold=550)
-    for i in range (0, 18):
-        cv2.imwrite(f"C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/bunny_bounce/sp_calc/white_bk/{i:03}.png", white)
-
-    exit()
+    # white = create_custom_image(800, 600, y_threshold=550)
+    # for i in range (0, 18):
+    #     cv2.imwrite(f"C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/bunny_bounce/sp_calc/white_bk/{i:03}.png", white)
+    #
+    # exit()
     image_count = 24
-    folder_gt =   'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/tree_slide_short/sp_calc/gt'
-    folder_cmp =  'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/tree_slide_short/sp_calc/init'
-    iou_values = calc_dir(dir_path1=folder_cmp, dir_path2=folder_gt, img_count=image_count, start_idx=0, max_offset=5)
+    folder_gt =   'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/dragon_slip_short/sp_calc/gt'
+    folder_cmp =  'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/dragon_slip_short/sp_calc/ga'
+    iou_values = calc_dir(dir_path1=folder_cmp, dir_path2=folder_gt, img_count=image_count, start_idx=0, max_offset=10)
     print("generate ", folder_cmp, " done")
     # folder_gt =   'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/sp_calc/gt'
     # folder_cmp =  'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/sp_calc/pa'

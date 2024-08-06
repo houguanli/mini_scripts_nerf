@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 def sort_key(s):
-    return int(s.split(".")[0][5:])
+    return int(s.split(".")[0][0:])
 
 def rename_images(directory, new_ext=None, start_idx=1, sp_sort_flag = 1):
     # 获取文件夹中的所有文件
@@ -104,9 +104,11 @@ if __name__ == "__main__":
     directory_path = 'D:/gitwork/NeuS/public_data/soccer_gal/image'  # 替换为你的文件夹路径
     directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap_clash/move2'  # 替换为你的文件夹路径
     directory_path = 'C:/Users/GUANLI.HOU/Desktop/fake_full_render/slide/pga'
-    # directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/soap_geo/sp_calc/mask'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/dragon_slip_short/sp_calc/ga_sp'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/white_bk'  # 替换为你的文件夹路径
+    # directory_path = 'C:/Users/GUANLI.HOU/Desktop/fake_full_render/bunny/ga'  # 替换为你的文件夹路径
 
-    rename_images(directory_path, start_idx=0, new_ext=".png", sp_sort_flag=True)
+    rename_images(directory_path, start_idx=000, new_ext=".png", sp_sort_flag=True)
     # directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/sp_calc/init_sp'  # 替换为你的文件夹路径
     #
     # rename_images(directory_path, start_idx=0, new_ext=".png", sp_sort_flag=True)

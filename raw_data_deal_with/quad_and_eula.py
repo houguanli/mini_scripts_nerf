@@ -103,7 +103,7 @@ def euler_to_quaternion(roll, pitch, yaw):
 
 
 # Example quaternion
-q =[-0.059238496177121146 , 0.998243853695083 , 0.0 , 0.0]
+q =[0.5189141876553386 , -0.7318492017262789 , 0.07693510545623503 , -0.43497793299866394]
 w, x, y, z = q[0], q[1], q[2], q[3]
 # Convert quaternion to euler angles
 roll, pitch, yaw = quaternion_to_euler(w, x, y, z)
@@ -117,9 +117,9 @@ print("Roll: {:.2f} degrees".format(roll_deg))
 print("Pitch: {:.2f} degrees".format(pitch_deg))
 print("Yaw: {:.2f} degrees".format(yaw_deg))
 delat_P = [0,0,0]
-roll = math.radians(-36 + delat_P[0])  # Roll: rotation around the x-axis
-pitch = math.radians(180+ delat_P[1])  # Pitch: rotation around the y-axis
-yaw = math.radians(0 + delat_P[2])  # Yaw: rotation around the z-axis
+roll = math.radians(99.6982 + delat_P[0])  # Roll: rotation around the x-axis
+pitch = math.radians(-43.599+ delat_P[1])  # Pitch: rotation around the y-axis
+yaw = math.radians(27.2594 + delat_P[2])  # Yaw: rotation around the z-axis
 # roll, pitch, yaw = [math.radians(16.3), math.radians(-1.1), math.radians(60)]
 # Convert euler angles to quaternion
 w, x, y, z = euler_to_quaternion(roll, pitch, yaw)

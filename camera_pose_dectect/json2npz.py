@@ -125,7 +125,7 @@ if __name__ == '__main__':
     npz_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap1_qr1/preprocessed/cameras_sphere.npz"
     npz_path = "C:/Users/guanli.hou/Desktop/tree_circle/cameras_sphere.npz"
     npz_path = "C:/Users/guanli.hou/Desktop/real_world/static/public_data/joyo/cameras_sphere.npz"
-    npz_path = "C:/Users/guanli.hou/Desktop/real_world/static/public_data/book/cameras_sphere.npz"
+    npz_path = "C:/Users/GUANLI.HOU/Desktop/neural_rig/synthetic_data/bunny/bunny_stand/cameras_sphere.npz"
 
     npz_path_test = "C:/Users/GUANLI.HOU/Desktop/real_world/static/public_data/slide1/cameras_sphere.npz"
 

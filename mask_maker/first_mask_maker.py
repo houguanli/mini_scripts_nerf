@@ -87,7 +87,7 @@ def remove_bk(img_path): # assume png
 
         # Add the alpha channel to the image
         image = np.dstack((image, alpha_channel))
-    threshold_value,  threshold_value_max= 0, 254 # black or white bk
+    threshold_value,  threshold_value_max= 2, 254 # black or white bk
     height, width, _ = image.shape
     refined_mask = image.copy()
     for y in range(height):
@@ -386,20 +386,21 @@ if __name__ == '__main__':
     output_path = "D:/gitwork/NeuS/public_data/soccer_wb/image"
     output_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/image"
     output_path = "C:/Users/guanl/Desktop/GenshinNerf/reflect_bunny_torch_base/motion/bunny_only/gt"
-    output_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/ga_wm"
+    output_path = "C:/Users/GUANLI.HOU/Desktop/fake_full_render/bunny/"
     # output_path = 'C:/Users/GUANLI.HOU/Desktop/fake_full_render/slide/'
-    bk_path = output_path + "bk.png"
-    cmb_dir = output_path + "pga"
+    bk_path = output_path + "bk2.png"
+    cmb_dir = output_path + "pga_wb"
     # output_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/dragon_slip_short/IoU_calc/pga"
     new_width = 4624  # 新的宽度
     new_height = 3472  # 新的高度
-    # replace_images_with_alpha(cmb_dir, bk_path, num_images=18)
+    # refine_all_mask(directory=output_path)
+    replace_images_with_alpha(cmb_dir, bk_path, num_images=35)
     # resize_image(input_path, output_path, new_width, new_height)
     # remove_all_bk(output_path, new_postfix='.png')
 
     # remake_all_alpha(output_path, new_postfix='.png')
-    merge_images("C:/Users/GUANLI.HOU/Desktop/fake_full_render/yoyo/tmp2/000.png",
-                 "C:/Users/GUANLI.HOU/Desktop/fake_full_render/yoyo/tmp2/001.png", threshold=1000)
+    # merge_images("C:/Users/GUANLI.HOU/Desktop/fake_full_render/yoyo/tmp2/000.png",
+    #              "C:/Users/GUANLI.HOU/Desktop/fake_full_render/yoyo/tmp2/001.png", threshold=1000)
     exit()
     # keep_largest_white_area(output_path__)
     #
