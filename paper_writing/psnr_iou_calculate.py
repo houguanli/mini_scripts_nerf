@@ -121,9 +121,9 @@ if __name__ == "__main__":
     # folder_gt =   'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_b/sp_calc/gt'
     # folder_cmp =  'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/dragon_slip_short/sp_calc/ga_sp'
     # folder_mask = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/dragon_slip_short/sp_calc/white_sp'
-    folder_gt =   'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/gt_wb'
-    folder_cmp =  'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/pga_wb'
-    folder_mask = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/white_bk'
+    folder_gt =   'C:/Users/GUANLI.HOU/Desktop/GenshinNerf/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/gt_wb'
+    folder_cmp =  'C:/Users/GUANLI.HOU/Desktop/GenshinNerf/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/tmp'
+    folder_mask = 'C:/Users/GUANLI.HOU/Desktop/GenshinNerf/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/white_bk'
 
     # iou_values = calculate_iou_dir(ground_truth_folder=folder_mask, prediction_folder=folder_cmp, img_count=image_count, start_idx=0)
 

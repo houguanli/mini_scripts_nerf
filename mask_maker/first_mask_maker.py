@@ -74,27 +74,34 @@ def refine_mask(img_path, convert_option=True):
     print("saving refined mask at " + img_path)
     cv2.imwrite(img_path, refined_mask)  # overwrite the original image
 
-def remove_bk(img_path): # assume png
+def remove_bk(img_path, flag_01=False): # assume png
     # image = cv2.imread(img_path)
     # 读取图像并以RGBA格式存储
     image = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+
+    if flag_01: # treat as a bio-pixel image
+        image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE) #reread
+        expanded_image = np.zeros((image.shape[0], image.shape[1], 4), dtype=np.uint8)
+        # 将单通道图像的值复制到所有四个通道
+        for i in range(4):
+            expanded_image[:, :, i] = image
+        image = expanded_image
 
     # 如果图像为三维数组，添加一个维度使其变为四维数组
     if  image.shape[2] == 3:
         print("No alpha！！！")
         # Create an alpha channel with all values set to 255 (fully opaque)
         alpha_channel = np.full((image.shape[0], image.shape[1], 1), 255, dtype=np.uint8)
-
         # Add the alpha channel to the image
         image = np.dstack((image, alpha_channel))
-    threshold_value,  threshold_value_max= 2, 254 # black or white bk
+    threshold_value,  threshold_value_max= 0, 255 # black or white bk
     height, width, _ = image.shape
     refined_mask = image.copy()
     for y in range(height):
         for x in range(width):
-            pixel_sum = image[y, x][0] + 0.
+            pixel_sum = 0. + image[y, x][0] + image[y, x][1] + image[y, x][2]
             # if all(pixel > threshold_value for pixel in image[y, x]):
-            if threshold_value < pixel_sum < threshold_value_max:
+            if threshold_value < pixel_sum : # not remake bg
                 refined_mask[y, x] = refined_mask[y, x]
                 # refined_mask[y, x] = [255, 255, 255]   # 设置为白色
             else:
@@ -113,7 +120,7 @@ def refine_alpha(img_path, new_alpha): # assume png
         exit(-1)
     else:
         print("remaking " + img_path + " with alpha " + str(new_alpha))
-    threshold_value,  threshold_value_max= 10, 200 # black or white bk
+    threshold_value,  threshold_value_max= 1, 200 # black or white bk
     height, width, _ = image.shape
     refined_mask = image.copy()
     for y in range(height):
@@ -135,7 +142,7 @@ def resize_image(input_path, output_path, new_width, new_height):
         print(f"图像已调整大小并保存到 {output_path}")
     except Exception as e:
         print(f"发生错误: {e}")
-def remove_all_bk(directory, new_postfix=None):
+def remove_all_bk(directory, new_postfix=None, flag_01=False):
     files = os.listdir(directory)
 
     # 过滤出.png和.jpg格式的图片
@@ -155,7 +162,7 @@ def remove_all_bk(directory, new_postfix=None):
         # 获取图片当前的完整路径和新的完整路径
         old_path = os.path.join(directory, image)
         new_path = os.path.join(directory, new_name)
-        remove_bk(old_path)
+        remove_bk(old_path, flag_01=flag_01)
         # 重命名图片
 
 def remove_all_bk_recursive(directory, new_postfix=None):
@@ -387,20 +394,20 @@ if __name__ == '__main__':
     output_path = "C:/Users/guanl/Desktop/GenshinNerf/t22/image"
     output_path = "C:/Users/guanl/Desktop/GenshinNerf/reflect_bunny_torch_base/motion/bunny_only/gt"
     output_path = "C:/Users/GUANLI.HOU/Desktop/fake_full_render/bunny/"
-    # output_path = 'C:/Users/GUANLI.HOU/Desktop/fake_full_render/slide/'
-    bk_path = output_path + "bk2.png"
-    cmb_dir = output_path + "pga_wb"
+    output_path = 'C:/Users/GUANLI.HOU/Desktop/GenshinNerf/PGA_NeuS_Paper_writing/changing_alpha/dragon_sub/dragon_mask_sub/'
+    bk_path = output_path + "bk.png"
+    cmb_dir = output_path + "tmp"
     # output_path = "C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/dragon_slip_short/IoU_calc/pga"
     new_width = 4624  # 新的宽度
     new_height = 3472  # 新的高度
     # refine_all_mask(directory=output_path)
-    replace_images_with_alpha(cmb_dir, bk_path, num_images=35)
+    # replace_images_with_alpha(cmb_dir, bk_path, num_images=35)
     # resize_image(input_path, output_path, new_width, new_height)
-    # remove_all_bk(output_path, new_postfix='.png')
+    remove_all_bk(output_path, new_postfix='.png', flag_01=True)
 
     # remake_all_alpha(output_path, new_postfix='.png')
-    # merge_images("C:/Users/GUANLI.HOU/Desktop/fake_full_render/yoyo/tmp2/000.png",
-    #              "C:/Users/GUANLI.HOU/Desktop/fake_full_render/yoyo/tmp2/001.png", threshold=1000)
+    # merge_images("C:/Users/GUANLI.HOU/Desktop/001.png",
+    #              "C:/Users/GUANLI.HOU/Desktop/000.png", threshold=400)
     exit()
     # keep_largest_white_area(output_path__)
     #

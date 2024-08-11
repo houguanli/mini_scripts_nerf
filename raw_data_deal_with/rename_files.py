@@ -106,7 +106,7 @@ if __name__ == "__main__":
     directory_path = 'C:/Users/GUANLI.HOU/Desktop/fake_full_render/slide/pga'
     directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/dragon_slip_short/sp_calc/ga_sp'  # 替换为你的文件夹路径
     directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/white_bk'  # 替换为你的文件夹路径
-    # directory_path = 'C:/Users/GUANLI.HOU/Desktop/fake_full_render/bunny/ga'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/GUANLI.HOU/Desktop/GenshinNerf/PGA_NeuS_Paper_writing/changing_alpha/dragon_pa_sub'  # 替换为你的文件夹路径
 
     rename_images(directory_path, start_idx=000, new_ext=".png", sp_sort_flag=True)
     # directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/sp_calc/init_sp'  # 替换为你的文件夹路径
