@@ -33,9 +33,9 @@ static_phone_K_yuanmu_1920 =  \
  [ 0.00000000e+00,  0.00000000e+00,  1.00000000e+00]]
 
 dynaimic_phone_K_yuanmu_1920 = \
-[[3.27436621e+03,  4.26224760e-05,  9.48091187e+02],
- [ 0.00000000e+00, 3.27436621e+03,  2.97527985e+02],
- [ 0.00000000e+00,  0.00000000e+00,  1.00000000e+00]]
+    [[4.37470801e+03, 1.80489751e-05, 1.17978186e+03],
+     [0.00000000e+00, 4.38952051e+03, 4.72950500e+02],
+     [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
 
 dynaimic_phone_K_yuanmu_1920_tree = \
 [[3.27436621e+03,  4.26224760e-05,  9.48091187e+02],
@@ -393,7 +393,7 @@ if __name__ == '__main__':
     # this code is a example for single 6x6 qr detection:
     # the marker size is 2.8 cm, K (intrinsic mode is dynaimic_phone_K_yuanmu_1920)
     filename = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap_dynamic1/preprocessed/image/021.png'
-    filename = 'C:/Users/guanli.hou/Desktop/real_world/dynamic/public_data/tree_joyo/qr1.png'
+    filename = 'C:/Users/guanli.hou/Desktop/real_world/dynamic/public_data/tree_slide/tree_qr_static_1qr.png'
     # filename = '/Users/houguanli/Desktop/real_world/object/tree/qr.jpg'
 
     c2w = detect_aruco_and_estimate_pose(filename, marker_size= 0.03, K=None, dict_type="6X6", require_debug=False, muti_qr_mode="single_mode", K_mode="yuanmu_1920_moded")

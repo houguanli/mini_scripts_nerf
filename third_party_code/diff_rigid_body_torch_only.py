@@ -155,7 +155,6 @@ class RigidBodySimulator(torch.nn.Module):
             contact_mask = contact_condition.float()[:, None]  # add a new axis to broadcast
             # calculate the sum of the contact points
             sum_position = torch.sum(self.x * contact_mask, dim=0)
-
             # calculate the average of the contact points
             collision_ri = sum_position / num_collision
             # print('collision_ri:{}'.format(collision_ri))
@@ -268,13 +267,13 @@ class RigidBodySimulator(torch.nn.Module):
 if __name__ == '__main__':
     current_directory = os.path.dirname(os.path.abspath(__file__))
     # file_name = "C:/Users/guanl/Desktop/GenshinNerf/slip_bunny_ti_base/bunny_original.obj"
-    file_name = "C:/Users/guanl/Desktop/GenshinNerf/slip_duck_torch/duck3d_original.obj"
-    obstacle_mesh = 'C:/Users/guanl/Desktop/GenshinNerf/slip_bunny_ti_base/slope_new.obj'
+    file_name = file_name = Path(current_directory) / 'mesh' / 'bunny.obj'
+    obstacle_mesh = file_name = Path(current_directory) / 'mesh' / 'slope_new.obj'
     options = {
         'substep': 10,
         'frames': 60,
-        'kn': 0.0,
-        'mu': 0.3,
+        'kn': 0.92,
+        'mu': 0.1,
         'output': Path(current_directory) / 'output',
         'linear_damping': 0.999,
         'angular_damping': 0.998,
@@ -299,7 +298,7 @@ if __name__ == '__main__':
     rigid.add_planar_contact(slope_degree=30, init_height=1.0)
     pbar = trange(options['frames'] * options['substep'] - 1)
     for i in pbar:
-        translation, rotation = rigid(i)
+        translation, rotation = rigid(i) # move forward
         torch.cuda.synchronize()
         if i % 10 == 0:
             rigid.export_mesh(i)

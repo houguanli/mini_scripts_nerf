@@ -3,8 +3,10 @@ import os
 import cv2
 import numpy as np
 
+def sort_key(s):
+    return int(s.split(".")[0][0:])
 
-def rename_images(directory, new_ext=None, start_idx=1):
+def rename_images(directory, new_ext=None, start_idx=1, sp_sort_flag = 1):
     # 获取文件夹中的所有文件
     files = os.listdir(directory)
 
@@ -16,8 +18,12 @@ def rename_images(directory, new_ext=None, start_idx=1):
         raise ValueError("图片数量超过1000张!")
 
     # 对图片进行排序，这样我们在重命名时不会遗漏任何图片
-    images.sort()
+    if not sp_sort_flag:
+        images.sort()
+    else:
+        images = sorted(images, key=sort_key)
 
+    #
     # 开始重命名
     for idx, image in enumerate(images, start_idx):
         # 获取文件扩展名
@@ -26,6 +32,7 @@ def rename_images(directory, new_ext=None, start_idx=1):
         # 新名称格式：0001, 0002, ...
         if new_ext is not None:
             ext = new_ext
+
         new_name = f"{idx:03}{ext}"
         # 获取图片当前的完整路径和新的完整路径
         old_path = os.path.join(directory, image)
@@ -96,8 +103,18 @@ if __name__ == "__main__":
     # 替换为你的文件夹路径
     directory_path = 'D:/gitwork/NeuS/public_data/soccer_gal/image'  # 替换为你的文件夹路径
     directory_path = 'C:/Users/guanl/Desktop/GenshinNerf/t22/soap/soap_clash/move2'  # 替换为你的文件夹路径
-    directory_path = '/Users/houguanli/Desktop/tree_circle/mask'
-    directory_path = 'C:/Users/guanli.hou/Desktop/real_world/dynamic/exp/soap_geo/mask_gt'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/GUANLI.HOU/Desktop/fake_full_render/slide/pga'
+    directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/dragon_slip_short/sp_calc/ga_sp'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic/exp/bunny_bounce_long/IoU_calc/white_bk'  # 替换为你的文件夹路径
+    directory_path = 'C:/Users/GUANLI.HOU/Desktop/GenshinNerf/PGA_NeuS_Paper_writing/changing_alpha/dragon_pa_sub'  # 替换为你的文件夹路径
 
-    rename_images(directory_path, start_idx=0, new_ext=".png")
-
+    rename_images(directory_path, start_idx=000, new_ext=".png", sp_sort_flag=True)
+    # directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/sp_calc/init_sp'  # 替换为你的文件夹路径
+    #
+    # rename_images(directory_path, start_idx=0, new_ext=".png", sp_sort_flag=True)
+    # directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/sp_calc/pa_sp'  # 替换为你的文件夹路径
+    #
+    # rename_images(directory_path, start_idx=0, new_ext=".png", sp_sort_flag=True)
+    # directory_path = 'C:/Users/GUANLI.HOU/Desktop/real_world/dynamic_short/exp/yoyo_book/sp_calc/pga_sp'  # 替换为你的文件夹路径
+    #
+    # rename_images(directory_path, start_idx=0, new_ext=".png", sp_sort_flag=True)

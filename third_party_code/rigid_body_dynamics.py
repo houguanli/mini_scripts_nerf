@@ -474,8 +474,8 @@ if __name__ == '__main__':
     file_name = "C:/Users/guanl/Desktop/GenshinNerf/slip_bunny_ti_base/bunny_original.obj"
     robot = rigid_body(file_name, { 'frames': 60,
                                     'ke': 0.2,
-                                    'kn': 0.0,
-                                    'mu': 1,
+                                    'kn': 0.92,
+                                    'mu': 0.1,
                                     'init_height': 1,
                                     'offset': 0.0, 
                                     'p': 3,

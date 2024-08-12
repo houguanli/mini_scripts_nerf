@@ -12,9 +12,9 @@ def make_open3d_point_cloud(xyz, color=None):
     return pcd
 
 if __name__ == '__main__':
-    pc0_path = "C:/Users/GUANLI.HOU/Desktop/real_world/00300000.ply"
-    pc1_path = "C:/Users/GUANLI.HOU/Desktop/real_world/00300000_1_rough.ply"
-    out_path = "C:/Users/GUANLI.HOU/Desktop/real_world/tree_merge.ply"
+    pc0_path = "C:/Users/GUANLI.HOU/Desktop/dragon_icp/dragon_pos1__clip_raw_reg.ply"
+    pc1_path = "C:/Users/GUANLI.HOU/Desktop/dragon_icp/dragon_pos2_wo_bottom.ply"
+    out_path = "C:/Users/GUANLI.HOU/Desktop/dragon_icp/dragon_merge.ply"
 
     mesh0 = o3d.io.read_triangle_mesh(pc0_path)
     mesh1 = o3d.io.read_triangle_mesh(pc1_path)
@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     o3d.visualization.draw_geometries([pcd0, pcd1])
 
-    downsample = 0.001
+    downsample = 0.002
     pcd0 = o3d.geometry.PointCloud.voxel_down_sample(pcd0, voxel_size=downsample)
     pcd1 = o3d.geometry.PointCloud.voxel_down_sample(pcd1, voxel_size=downsample)
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     p0_to_1 = p0_to_1 + tmp_mat[:3, 3]
     pts = make_open3d_point_cloud(p0_to_1)
     res = make_open3d_point_cloud(np.concatenate((p0_to_1, pcd1.points)))
-    downsample = 0.001
+    downsample = 0.002
     res = o3d.geometry.PointCloud.voxel_down_sample(res, voxel_size=downsample)
     o3d.io.write_point_cloud(out_path, res, write_ascii=True)
     o3d.visualization.draw_geometries([res])
