@@ -1,3 +1,5 @@
+import pdb
+
 import torch
 import numpy as np
 import trimesh
@@ -19,7 +21,7 @@ class RigidBodySimulator(torch.nn.Module):
         print('mass_center:{}'.format(self.mesh.center_mass))
 
         # load collision mesh
-        self.voxel_resolution = 64
+        self.voxel_resolution = 512
         # convert vertices to numpy array
         vertices = np.array(self.mesh.vertices) - self.mesh.center_mass
 
@@ -40,18 +42,16 @@ class RigidBodySimulator(torch.nn.Module):
 
         self.collision_function = []
 
-        rigid_body_sdf = np.load(str(Path(options['objects_sdf_path'])))['sdf_values']
-        rigid_body_sdf_grad = np.array(np.gradient(self.rigid_body_sdf))
-
-        bbox = np.load(str(Path(options['objects_sdf_path'])))['bbox']
+        self.rigid_body_sdf = np.load(str(Path(options['objects_sdf_path'])))['sdf_values']
+        self.rigid_body_sdf_grad = np.array(np.gradient(self.rigid_body_sdf))
+        self.bbox = np.load(str(Path(options['objects_sdf_path'])))['mesh_box']
         self.voxel_resolution = np.load(str(Path(options['objects_sdf_path'])))['resolution']
-
+        self.rigid_body_sdf = self.rigid_body_sdf.reshape([self.voxel_resolution, self.voxel_resolution, self.voxel_resolution])
         # copy the sdf values to the torch tensor
-        self.rigid_body_sdf = torch.from_numpy(rigid_body_sdf, dtype=torch.float32)
-        self.rigid_body_sdf_grad = torch.from_numpy(rigid_body_sdf_grad, dtype=torch.float32)
-        self.bbox = torch.from_numpy(bbox, dtype=torch.float32)
-
-        # torch tensors
+        self.rigid_body_sdf = torch.from_numpy(self.rigid_body_sdf.astype(np.float32))
+        self.rigid_body_sdf_grad = torch.from_numpy(self.rigid_body_sdf_grad.astype(np.float32))
+        self.bbox = torch.from_numpy(self.bbox.astype(np.float32))
+        # pdb.set_trace()
         self.mass_center = torch.tensor(self.mesh.center_mass, dtype=torch.float32)
         self.x = torch.tensor(vertices, dtype=torch.float32, requires_grad=True)
         for i in range(self.frames * self.substep):
@@ -168,14 +168,14 @@ class RigidBodySimulator(torch.nn.Module):
             self.inv_mass = 1.0 / self.mass
             print('inerita_referance:{}'.format(self.inertia_referance))
 
-    def collision_detect(self, f:torch.int32, contact_normal:torch.tensor, translation:torch.tensor, quaternion:torch.tensor, v:torch.tensor, omage:torch.tensor):
+    def collision_detect(self, f:torch.int32, contact_normal:torch.tensor, translation:torch.tensor, quaternion:torch.tensor, v:torch.tensor, omega:torch.tensor):
         mat_R = self.quat_to_matrix(quaternion)
-        xi = translation +  torch.matmul(self.x, mat_R.t()) + self.mass_center[None]
-        vi = v[f] + torch.cross(omage.unsqueeze(0),  torch.matmul(self.x, mat_R.t()), dim=1)
+        xi = translation + torch.matmul(self.x, mat_R.t()) + self.mass_center[None]
+        vi = v + torch.cross(omega.unsqueeze(0),  torch.matmul(self.x, mat_R.t()), dim=1)
         d = torch.einsum('bi,i->b', xi, contact_normal)
         rel_v = torch.einsum('bi,i->b', vi, contact_normal)
         contact_condition = (d < 0.0) & (rel_v < 0.0)
-        # caculate the how many points are in contact with the plane
+        # calculate how many points are in contact with the plane
         num_collision = torch.sum(contact_condition.int())
         v_out = torch.zeros(3, dtype=torch.float32)
         omega_out = torch.zeros(3, dtype=torch.float32)
@@ -189,7 +189,7 @@ class RigidBodySimulator(torch.nn.Module):
             # print('collision_ri:{}'.format(collision_ri))
             collision_Ri = mat_R @ collision_ri
             # calculate the velocity of the contact points
-            vi = self.v[f] + self.omega[f].cross(collision_Ri)
+            vi = v + omega.cross(collision_Ri)
 
             v_i_n = vi.dot(contact_normal) * contact_normal
             v_i_t = vi - v_i_n
@@ -274,18 +274,24 @@ class RigidBodySimulator(torch.nn.Module):
 
         # xi2_local_to_obj1 now contains obj2's vertices in obj1's local coordinate system
         num_collision = 0
+        xi2_local_to_obj1_in_bbox = (xi2_local_to_obj1 > self.bbox[0]) & (xi2_local_to_obj1 < self.bbox[1])
         # sum_position = torch.zeros(3, dtype=torch.float32)
         # query xi2_local_to_obj1's sdf value
-        xi2_local_to_obj1_sdf = torch.nn.functional.grid_sample(self.rigid_body_sdf[None, None, None, :], xi2_local_to_obj1[None, :, :, :], mode='bilinear', padding_mode='border')
-        contact_condition = xi2_local_to_obj1_sdf < 0.0 # sdf value less than 0 means in collision
+        # pdb.set_trace()
+        sdf_grid = self.rigid_body_sdf[None, None, :, :, :]
+        bbox_delta = self.bbox[1] - self.bbox[0]
+        xi2_normalized = 2.0 * (xi2_local_to_obj1 / bbox_delta) - 1.0
+        xi2_normalized = xi2_normalized[None, :, None, None, :]
+        xi2_local_to_obj1_sdf = torch.nn.functional.grid_sample(sdf_grid, xi2_normalized, mode='bilinear',
+                                                                padding_mode='border', align_corners=True)
+        xi2_local_to_obj1_sdf = xi2_local_to_obj1_sdf.reshape(-1)
+        contact_condition = xi2_local_to_obj1_sdf < 0.0  # sdf value less than 0 means in collision
         if num_collision > 0:
             contact_mask = contact_condition.float()[:, None]  # add a new axis to broadcast
             # calculate the sum of the contact points
             sum_position = torch.sum(xi2_local_to_obj1 * contact_mask, dim=0)
-            
             # calculate the average of the contact points
             collision_ri = sum_position / num_collision
-
             collision_Ri1 = mat_R1 @ collision_ri
             collision_Ri2 = mat_R2 @ collision_ri
 
@@ -344,12 +350,12 @@ class RigidBodySimulator(torch.nn.Module):
         # omega_out = omega_out + omega_out_
 
         v_1_out_ , omega_1_out_ = self.collision_detect(f=f, contact_normal=torch.tensor([0.0, 1.0, 0.0]), translation=self.object1_translation_list[f],\
-                                                     quaternion=self.object1_quaternion_list[f], v=self.obj1_v[f], omage=self.obj1_omega[f])
+                                                     quaternion=self.object1_quaternion_list[f], v=self.obj1_v[f], omega=self.obj1_omega[f])
         v1_out = v1_out + v_1_out_
         omega1_out = omega1_out + omega_1_out_
 
         v_2_out_, omega_2_out_ = self.collision_detect(f=f, contact_normal=torch.tensor([0.0, 1.0, 0.0]), translation=self.object2_translation_list[f],\
-                                                        quaternion=self.object2_quaternion_list[f], v=self.obj2_v[f], omage=self.obj2_omega[f])
+                                                        quaternion=self.object2_quaternion_list[f], v=self.obj2_v[f], omega=self.obj2_omega[f])
         v2_out = v2_out + v_2_out_
         omega2_out = omega2_out + omega_2_out_
 
@@ -392,12 +398,12 @@ class RigidBodySimulator(torch.nn.Module):
             faces = self.mesh.faces
             mesh1 = trimesh.Trimesh(vertices=xi1.detach().numpy(), faces=faces)
             mesh2 = trimesh.Trimesh(vertices=xi2.detach().numpy(), faces=faces)
-
-            self.object1_translation.append(self.object1_translation[f].detach().clone().numpy())
-            self.object1_quaternion.append(self.object1_quaternion_list[f].detach().clone().numpy())
-            self.object2_translation.append(self.object2_translation[f].detach().clone().numpy())
-            self.object2_quaternion.append(self.object2_quaternion_list[f].detach().clone().numpy())
-            
+            #
+            # self.object1_translation.append(self.object1_translation[f].detach().clone().numpy())
+            # self.object1_quaternion.append(self.object1_quaternion_list[f].detach().clone().numpy())
+            # self.object2_translation.append(self.object2_translation[f].detach().clone().numpy())
+            # self.object2_quaternion.append(self.object2_quaternion_list[f].detach().clone().numpy())
+            #
             mesh1.export(str(Path(self.options['output']) / '{}_1.obj'.format(f // self.substep)))
             mesh2.export(str(Path(self.options['output']) / '{}_2.obj'.format(f // self.substep)))
     
@@ -418,8 +424,9 @@ class RigidBodySimulator(torch.nn.Module):
 
 if __name__ == '__main__':
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    file_name = Path(current_directory) / 'assets' / 'bunny_original.obj'
-    obscale_mesh = Path(current_directory) / 'assets' / 'slope_new.obj'
+    file_name = "C:/Users/guanl/Desktop/GenshinNerf/slip_bunny_torch_base/bunny_original.obj"
+    obstacle_mesh = 'C:/Users/guanl/Desktop/GenshinNerf/slip_bunny_ti_base/slope_new.obj'
+    objects_sdf_path = "C:/Users/guanl/Desktop/GenshinNerf/slip_bunny_torch_base/bunny_original.npz"
     options = {
         'substep': 10,
         'frames': 100,
@@ -429,24 +436,22 @@ if __name__ == '__main__':
         'linear_damping': 0.999,
         'angular_damping': 0.998,
         'mesh': file_name,
-        'obscale_mesh': obscale_mesh,
-        'sdf_file': Path(current_directory) / 'assets' / 'bunny_sdf.npz'
+        'obstacle_mesh': obstacle_mesh,
+        'objects_sdf_path': objects_sdf_path
     }
-
     rigid = RigidBodySimulator(options=options)
 
     rigid.set_init_v()
 
     rigid.set_obj1_init_quaternion([-90, -90.0, -60.0])
-    rigid.set_obj1_init_translation([2.1, 0.4, 0.25])
+    rigid.set_obj1_init_translation([2.1, 0.5, 0.25])
 
     rigid.set_obj2_init_quaternion([0.0, 0.0, 0.0])
-    rigid.set_obj2_init_translation([0.0, 0.0, 0.0])
-
+    rigid.set_obj2_init_translation([2.1, 0.2, 0.25])
     # rigid.add_planar_contact(slope_degree=30, init_height=1.0)
     pbar = trange(options['frames'] * options['substep'] - 1)
     for i in pbar:
-        translation, rotation = rigid(i)
+        translation_obj1, rotation_obj1, translation_obj2, rotation_obj2 = rigid(i)
         torch.cuda.synchronize()
         if i % 10 == 0:
             rigid.export_mesh(i)

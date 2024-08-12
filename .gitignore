@@ -1,1 +1,3 @@
-/third_party_code/output/
+/third_party_code/output/*
+/third_party_code/mesh_result/*
+/third_party_code/output2/*
